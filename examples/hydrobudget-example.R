@@ -13,10 +13,10 @@ library(rechaRge)
 
 ## 2.2-Input data
 # use input example files provided by the package
-examples_dir <- system.file("examples", package = "rechaRge")
-input_rcn <- file.path(examples_dir, "input", "rcn.csv.gz") # RCN values per RCN cell ID
-input_climate <- file.path(examples_dir, "input", "climate.csv.gz") # precipitation total in mm/d per climate cell ID
-input_rcn_climate <- file.path(examples_dir, "input", "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
+base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
+input_rcn <- paste0(base_url, "rcn.csv.gz") # RCN values per RCN cell ID
+input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/d per climate cell ID
+input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
 
 ## 2.3-Calibration parameters
 HB <- rechaRge::new_hydrobugdet(
@@ -64,9 +64,9 @@ water_budget <- rechaRge::compute_recharge(
 head(water_budget)
 
 # 4-Process the river flow observations and assess simulation quality
-input_rcn_gauging <- file.path(examples_dir, "input", "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
-input_observed_flow <- file.path(examples_dir, "input", "observed_flow.csv.gz") # flow rates in mm/d
-input_alpha_lyne_hollick <- file.path(examples_dir, "input", "alpha_lyne_hollick.csv.gz")
+input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
+input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
+input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
 
 result <- rechaRge::compute_simulation_quality_assessment(
   HB,
