@@ -127,7 +127,7 @@
 
 \title{A Minimal Book Example}
 \author{Yihui Xie}
-\date{2024-01-29}
+\date{2024-02-01}
 
 \begin{document}
 \maketitle
@@ -255,16 +255,215 @@ We will approximate standard error to 0.027\footnote{\(p\) is unknown but expect
   SE = \sqrt(\frac{p(1-p)}{n}) \approx \sqrt{\frac{1/3 (1 - 1/3)} {300}} = 0.027
   \]}
 
-\hypertarget{applications}{%
-\chapter{Applications}\label{applications}}
+\hypertarget{example}{%
+\chapter{Example}\label{example}}
 
-Some \emph{significant} applications are demonstrated in this chapter.
+Load the \emph{rechaRge} library.
 
-\hypertarget{example-one}{%
-\section{Example one}\label{example-one}}
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rechaRge)}
+\end{Highlighting}
+\end{Shaded}
 
-\hypertarget{example-two}{%
-\section{Example two}\label{example-two}}
+\hypertarget{hydrobudget-model}{%
+\section{HydroBudget model}\label{hydrobudget-model}}
+
+\hypertarget{input-data-and-parameters}{%
+\subsection{Input data and parameters}\label{input-data-and-parameters}}
+
+Load the input data for the simulation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{base\_url }\OtherTok{\textless{}{-}} \StringTok{"https://github.com/gwrecharge/rechaRge{-}book/raw/main/examples/input/"}
+\NormalTok{input\_rcn }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"rcn.csv.gz"}\NormalTok{) }\CommentTok{\# RCN values per RCN cell ID}
+\NormalTok{input\_climate }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"climate.csv.gz"}\NormalTok{) }\CommentTok{\# precipitation total in mm/d per climate cell ID}
+\NormalTok{input\_rcn\_climate }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"rcn\_climate.csv.gz"}\NormalTok{) }\CommentTok{\# relation between climate and RCN cell IDs}
+\NormalTok{input\_rcn\_gauging }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"rcn\_gauging.csv.gz"}\NormalTok{) }\CommentTok{\# relation between gaugins station and RCN cell IDs}
+\NormalTok{input\_observed\_flow }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"observed\_flow.csv.gz"}\NormalTok{) }\CommentTok{\# flow rates in mm/d}
+\NormalTok{input\_alpha\_lyne\_hollick }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"alpha\_lyne\_hollick.csv.gz"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Set the \textbf{HydroBudget} model with the parameters values:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{HB }\OtherTok{\textless{}{-}}\NormalTok{ rechaRge}\SpecialCharTok{::}\FunctionTok{new\_hydrobugdet}\NormalTok{(}
+  \AttributeTok{T\_m =} \FloatTok{2.1}\NormalTok{, }\CommentTok{\# melting temperature (°C)}
+  \AttributeTok{C\_m =} \FloatTok{6.2}\NormalTok{, }\CommentTok{\# melting coefficient (mm/°C/d)}
+  \AttributeTok{TT\_F =} \SpecialCharTok{{-}}\FloatTok{17.6}\NormalTok{, }\CommentTok{\# Threshold temperature for soil frost (°C)}
+  \AttributeTok{F\_T =} \FloatTok{16.4}\NormalTok{, }\CommentTok{\# Freezing time (d)}
+  \AttributeTok{t\_API =} \FloatTok{3.9}\NormalTok{, }\CommentTok{\# Antecedent precipitation index time (d)}
+  \AttributeTok{f\_runoff =} \FloatTok{0.63}\NormalTok{, }\CommentTok{\# Runoff factor ({-})}
+  \AttributeTok{sw\_m =} \DecValTok{431}\NormalTok{, }\CommentTok{\# Maximum soil water content (mm)}
+  \AttributeTok{f\_inf =} \FloatTok{0.07} \CommentTok{\# infiltration factor ({-})}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Set the column names mappings matching the input datasets:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{HB}\SpecialCharTok{$}\NormalTok{rcn\_columns }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{rcn\_id =} \StringTok{"cell\_ID"}\NormalTok{,}
+  \AttributeTok{RCNII =} \StringTok{"RCNII"}\NormalTok{,}
+  \AttributeTok{lon =} \StringTok{"X\_L93"}\NormalTok{,}
+  \AttributeTok{lat =} \StringTok{"Y\_L93"}
+\NormalTok{)}
+\NormalTok{HB}\SpecialCharTok{$}\NormalTok{climate\_columns}\SpecialCharTok{$}\NormalTok{climate\_id }\OtherTok{\textless{}{-}} \StringTok{"climate\_cell"}
+\NormalTok{HB}\SpecialCharTok{$}\NormalTok{rcn\_climate\_columns }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{climate\_id =} \StringTok{"climate\_cell"}\NormalTok{,}
+  \AttributeTok{rcn\_id =} \StringTok{"cell\_ID"}
+\NormalTok{)}
+\NormalTok{HB}\SpecialCharTok{$}\NormalTok{rcn\_gauging\_columns }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{rcn\_id =} \StringTok{"cell\_ID"}\NormalTok{,}
+  \AttributeTok{station\_id =} \StringTok{"gauging\_stat"}
+\NormalTok{)}
+\NormalTok{HB}\SpecialCharTok{$}\NormalTok{alpha\_lyne\_hollick\_columns}\SpecialCharTok{$}\NormalTok{station\_id }\OtherTok{\textless{}{-}} \StringTok{"station"}
+\end{Highlighting}
+\end{Shaded}
+
+Set the simulation period:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{simul\_period }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{2010}\NormalTok{, }\DecValTok{2017}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{simulation}{%
+\subsection{Simulation}\label{simulation}}
+
+Compute the water budget using the HydroBudget model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{water\_budget }\OtherTok{\textless{}{-}}\NormalTok{ rechaRge}\SpecialCharTok{::}\FunctionTok{compute\_recharge}\NormalTok{(}
+\NormalTok{  HB,}
+  \AttributeTok{rcn =}\NormalTok{ input\_rcn,}
+  \AttributeTok{climate =}\NormalTok{ input\_climate,}
+  \AttributeTok{rcn\_climate =}\NormalTok{ input\_rcn\_climate,}
+  \AttributeTok{period =}\NormalTok{ simul\_period}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}{r|r|r|r|r|r|r|r|r|r|r}
+\hline
+year & month & VI & t\_mean & runoff & pet & aet & gwr & runoff\_2 & delta\_reservoir & rcn\_id\\
+\hline
+2010 & 1 & 28.2 & -7.3 & 21.5 & 1.6 & 1.6 & 10.2 & 0 & -5.1 & 62097\\
+\hline
+2010 & 2 & 27.9 & -5.7 & 7.9 & 4.6 & 4.6 & 8.8 & 0 & 6.6 & 62097\\
+\hline
+2010 & 3 & 83.0 & 1.0 & 30.8 & 19.5 & 19.5 & 16.1 & 0 & 16.6 & 62097\\
+\hline
+2010 & 4 & 68.2 & 7.7 & 24.9 & 51.5 & 51.5 & 15.1 & 0 & -23.3 & 62097\\
+\hline
+2010 & 5 & 46.9 & 13.8 & 3.8 & 94.7 & 73.8 & 4.4 & 0 & -35.2 & 62097\\
+\hline
+2010 & 6 & 107.9 & 17.0 & 33.3 & 114.7 & 81.1 & 0.2 & 0 & -6.7 & 62097\\
+\hline
+\end{tabular}
+
+\hypertarget{quality-assessment}{%
+\subsection{Quality assessment}\label{quality-assessment}}
+
+Process the river flow observations and assess simulation quality:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{\textless{}{-}}\NormalTok{ rechaRge}\SpecialCharTok{::}\FunctionTok{compute\_simulation\_quality\_assessment}\NormalTok{(}
+\NormalTok{  HB,}
+  \AttributeTok{water\_budget =}\NormalTok{ water\_budget,}
+  \AttributeTok{rcn\_gauging =}\NormalTok{ input\_rcn\_gauging,}
+  \AttributeTok{observed\_flow =}\NormalTok{ input\_observed\_flow,}
+  \AttributeTok{alpha\_lyne\_hollick =}\NormalTok{ input\_alpha\_lyne\_hollick,}
+  \AttributeTok{period =}\NormalTok{ simul\_period}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{results-handling}{%
+\subsection{Results handling}\label{results-handling}}
+
+Save the simulation results:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sim\_dir }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(}\FunctionTok{tempdir}\NormalTok{(), }\FunctionTok{paste0}\NormalTok{(}\StringTok{"simulation\_HydroBudget\_"}\NormalTok{, }\FunctionTok{format}\NormalTok{(}\FunctionTok{Sys.time}\NormalTok{(), }\StringTok{"\%Y\%m\%dT\%H\_\%M"}\NormalTok{)))}
+
+\CommentTok{\# Write output files}
+\NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_results}\NormalTok{(HB, water\_budget, }\AttributeTok{output\_dir =}\NormalTok{ sim\_dir)}
+\NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_rasters}\NormalTok{(}
+\NormalTok{  HB,}
+  \AttributeTok{water\_budget =}\NormalTok{ water\_budget,}
+  \AttributeTok{input\_rcn =}\NormalTok{ input\_rcn,}
+  \AttributeTok{crs =} \StringTok{"+proj=lcc +lat\_1=60 +lat\_2=46 +lat\_0=44 +lon\_0={-}68.5 +x\_0=0 +y\_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no\_defs"}\NormalTok{,}
+  \AttributeTok{output\_dir =}\NormalTok{ sim\_dir}
+\NormalTok{)}
+
+\CommentTok{\# List simulation output files}
+\FunctionTok{list.files}\NormalTok{(sim\_dir)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "01_bilan_spat_month.csv"         "02_bilan_unspat_month.csv"      
+## [3] "03_interannual_runoff_NAD83.tif" "04_interannual_aet_NAD83.tif"   
+## [5] "05_interannual_gwr_NAD83.tif"
+\end{verbatim}
+
+\hypertarget{data-visualization}{%
+\subsection{Data visualization}\label{data-visualization}}
+
+Visualize the saved raster files:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyterra)}
+\FunctionTok{library}\NormalTok{(terra)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(cowplot)}
+\NormalTok{subtitle }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(simul\_period[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{==}\NormalTok{ simul\_period[}\DecValTok{2}\NormalTok{],}
+  \FunctionTok{paste0}\NormalTok{(}\StringTok{"In "}\NormalTok{, simul\_period[}\DecValTok{1}\NormalTok{]),}
+  \FunctionTok{paste0}\NormalTok{(}\StringTok{"From "}\NormalTok{, simul\_period[}\DecValTok{1}\NormalTok{], }\StringTok{" to "}\NormalTok{, simul\_period[}\DecValTok{2}\NormalTok{])}
+\NormalTok{)}
+\NormalTok{runoff }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"03\_interannual\_runoff\_NAD83.tif"}\NormalTok{))}
+\NormalTok{runoffplot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_spatraster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ runoff) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{fill =} \StringTok{""}\NormalTok{,}
+    \AttributeTok{title =} \StringTok{"Runoff"}\NormalTok{,}
+    \AttributeTok{subtitle =}\NormalTok{ subtitle}
+\NormalTok{  )}
+\NormalTok{aet }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"04\_interannual\_aet\_NAD83.tif"}\NormalTok{))}
+\NormalTok{aetplot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_spatraster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ aet) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{fill =} \StringTok{""}\NormalTok{,}
+    \AttributeTok{title =} \StringTok{"Actual Evapotranspiration"}\NormalTok{,}
+    \AttributeTok{subtitle =}\NormalTok{ subtitle}
+\NormalTok{  )}
+\NormalTok{gwr }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"05\_interannual\_gwr\_NAD83.tif"}\NormalTok{))}
+\NormalTok{gwrplot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_spatraster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ gwr) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{fill =} \StringTok{""}\NormalTok{,}
+    \AttributeTok{title =} \StringTok{"Ground Water Recharge"}\NormalTok{,}
+    \AttributeTok{subtitle =}\NormalTok{ subtitle}
+\NormalTok{  )}
+\NormalTok{cowplot}\SpecialCharTok{::}\FunctionTok{plot\_grid}\NormalTok{(runoffplot, aetplot, gwrplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{rechaRge-book_files/figure-latex/unnamed-chunk-12-1.pdf}
 
 \hypertarget{final-words}{%
 \chapter{Final Words}\label{final-words}}
