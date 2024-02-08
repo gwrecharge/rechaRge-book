@@ -127,7 +127,7 @@
 
 \title{A Minimal Book Example}
 \author{Yihui Xie}
-\date{2024-02-01}
+\date{2024-02-08}
 
 \begin{document}
 \maketitle
@@ -351,9 +351,31 @@ Compute the water budget using the HydroBudget model:
 \end{Highlighting}
 \end{Shaded}
 
+The water budget data set is per year-month in each RCN cell:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{vi}, the vertical inflow
+\item
+  \texttt{t\_mean}, the mean temperature
+\item
+  \texttt{runoff}, the runoff
+\item
+  \texttt{pet}, the potential evapotranspiration
+\item
+  \texttt{aet}, the actual evapotranspiration
+\item
+  \texttt{gwr}, the ground water recharge
+\item
+  \texttt{runoff\_2}, the excess runoff
+\end{itemize}
+
+The head of this data set is:
+
 \begin{tabular}{r|r|r|r|r|r|r|r|r|r|r}
 \hline
-year & month & VI & t\_mean & runoff & pet & aet & gwr & runoff\_2 & delta\_reservoir & rcn\_id\\
+year & month & vi & t\_mean & runoff & pet & aet & gwr & runoff\_2 & delta\_reservoir & rcn\_id\\
 \hline
 2010 & 1 & 28.2 & -7.3 & 21.5 & 1.6 & 1.6 & 10.2 & 0 & -5.1 & 62097\\
 \hline
@@ -397,7 +419,20 @@ Save the simulation results:
 \NormalTok{sim\_dir }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(}\FunctionTok{tempdir}\NormalTok{(), }\FunctionTok{paste0}\NormalTok{(}\StringTok{"simulation\_HydroBudget\_"}\NormalTok{, }\FunctionTok{format}\NormalTok{(}\FunctionTok{Sys.time}\NormalTok{(), }\StringTok{"\%Y\%m\%dT\%H\_\%M"}\NormalTok{)))}
 
 \CommentTok{\# Write output files}
+\CommentTok{\# CSV}
 \NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_results}\NormalTok{(HB, water\_budget, }\AttributeTok{output\_dir =}\NormalTok{ sim\_dir)}
+\CommentTok{\# NetCDF}
+\NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_results}\NormalTok{(HB, water\_budget, }\AttributeTok{output\_dir =}\NormalTok{ sim\_dir, }\AttributeTok{format =} \StringTok{"nc"}\NormalTok{, }\AttributeTok{input\_rcn =}\NormalTok{ input\_rcn, }\AttributeTok{names =} \FunctionTok{list}\NormalTok{(}
+  \StringTok{"x"} \OtherTok{=} \FunctionTok{list}\NormalTok{(}
+    \AttributeTok{longname =} \StringTok{"Qc lambert NAD83 epsg32198 Est"}\NormalTok{,}
+    \AttributeTok{unit =} \StringTok{"m"}
+\NormalTok{  ),}
+  \StringTok{"y"} \OtherTok{=} \FunctionTok{list}\NormalTok{(}
+    \AttributeTok{longname =} \StringTok{"Qc lambert NAD83 epsg32198 North"}\NormalTok{,}
+    \AttributeTok{unit =} \StringTok{"m"}
+\NormalTok{  )}
+\NormalTok{))}
+\CommentTok{\# Rasters}
 \NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_rasters}\NormalTok{(}
 \NormalTok{  HB,}
   \AttributeTok{water\_budget =}\NormalTok{ water\_budget,}
@@ -406,15 +441,16 @@ Save the simulation results:
   \AttributeTok{output\_dir =}\NormalTok{ sim\_dir}
 \NormalTok{)}
 
+
 \CommentTok{\# List simulation output files}
 \FunctionTok{list.files}\NormalTok{(sim\_dir)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "01_bilan_spat_month.csv"         "02_bilan_unspat_month.csv"      
-## [3] "03_interannual_runoff_NAD83.tif" "04_interannual_aet_NAD83.tif"   
-## [5] "05_interannual_gwr_NAD83.tif"
+## [1] "bilan_spat_month.csv"         "bilan_unspat_month.csv"      
+## [3] "interannual_aet_NAD83.tif"    "interannual_gwr_NAD83.tif"   
+## [5] "interannual_runoff_NAD83.tif" "water_budget.nc"
 \end{verbatim}
 
 \hypertarget{data-visualization}{%
@@ -432,7 +468,7 @@ Visualize the saved raster files:
   \FunctionTok{paste0}\NormalTok{(}\StringTok{"In "}\NormalTok{, simul\_period[}\DecValTok{1}\NormalTok{]),}
   \FunctionTok{paste0}\NormalTok{(}\StringTok{"From "}\NormalTok{, simul\_period[}\DecValTok{1}\NormalTok{], }\StringTok{" to "}\NormalTok{, simul\_period[}\DecValTok{2}\NormalTok{])}
 \NormalTok{)}
-\NormalTok{runoff }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"03\_interannual\_runoff\_NAD83.tif"}\NormalTok{))}
+\NormalTok{runoff }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"interannual\_runoff\_NAD83.tif"}\NormalTok{))}
 \NormalTok{runoffplot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{geom\_spatraster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ runoff) }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}
@@ -441,7 +477,7 @@ Visualize the saved raster files:
     \AttributeTok{title =} \StringTok{"Runoff"}\NormalTok{,}
     \AttributeTok{subtitle =}\NormalTok{ subtitle}
 \NormalTok{  )}
-\NormalTok{aet }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"04\_interannual\_aet\_NAD83.tif"}\NormalTok{))}
+\NormalTok{aet }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"interannual\_aet\_NAD83.tif"}\NormalTok{))}
 \NormalTok{aetplot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{geom\_spatraster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ aet) }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}
@@ -450,7 +486,7 @@ Visualize the saved raster files:
     \AttributeTok{title =} \StringTok{"Actual Evapotranspiration"}\NormalTok{,}
     \AttributeTok{subtitle =}\NormalTok{ subtitle}
 \NormalTok{  )}
-\NormalTok{gwr }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"05\_interannual\_gwr\_NAD83.tif"}\NormalTok{))}
+\NormalTok{gwr }\OtherTok{\textless{}{-}}\NormalTok{ terra}\SpecialCharTok{::}\FunctionTok{rast}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"interannual\_gwr\_NAD83.tif"}\NormalTok{))}
 \NormalTok{gwrplot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{geom\_spatraster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ gwr) }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}

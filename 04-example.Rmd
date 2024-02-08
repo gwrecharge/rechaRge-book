@@ -68,7 +68,7 @@ simul_period <- c(2010, 2017)
 
 Compute the water budget using the HydroBudget model:
 
-```{r, cache=TRUE, message=FALSE}
+```{r, message=FALSE}
 water_budget <- rechaRge::compute_recharge(
   HB,
   rcn = input_rcn,
@@ -78,6 +78,17 @@ water_budget <- rechaRge::compute_recharge(
 )
 ```
 
+The water budget data set is per year-month in each RCN cell:
+
+* `vi`, the vertical inflow
+* `t_mean`, the mean temperature
+* `runoff`, the runoff
+* `pet`, the potential evapotranspiration
+* `aet`, the actual evapotranspiration
+* `gwr`, the ground water recharge
+* `runoff_2`, the excess runoff
+
+The head of this data set is:
 
 ```{r, echo=FALSE}
 knitr::kable(head(water_budget))
@@ -106,7 +117,20 @@ Save the simulation results:
 sim_dir <- file.path(tempdir(), paste0("simulation_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
 
 # Write output files
+# CSV
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
+# NetCDF
+rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
+  "x" = list(
+    longname = "Qc lambert NAD83 epsg32198 Est",
+    unit = "m"
+  ),
+  "y" = list(
+    longname = "Qc lambert NAD83 epsg32198 North",
+    unit = "m"
+  )
+))
+# Rasters
 rechaRge::write_recharge_rasters(
   HB,
   water_budget = water_budget,
@@ -114,6 +138,7 @@ rechaRge::write_recharge_rasters(
   crs = "+proj=lcc +lat_1=60 +lat_2=46 +lat_0=44 +lon_0=-68.5 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
   output_dir = sim_dir
 )
+
 
 # List simulation output files
 list.files(sim_dir)
@@ -132,7 +157,7 @@ subtitle <- ifelse(simul_period[1] == simul_period[2],
   paste0("In ", simul_period[1]),
   paste0("From ", simul_period[1], " to ", simul_period[2])
 )
-runoff <- terra::rast(file.path(sim_dir, "03_interannual_runoff_NAD83.tif"))
+runoff <- terra::rast(file.path(sim_dir, "interannual_runoff_NAD83.tif"))
 runoffplot <- ggplot() +
   geom_spatraster(data = runoff) +
   scale_fill_viridis_c(option = "inferno") +
@@ -141,7 +166,7 @@ runoffplot <- ggplot() +
     title = "Runoff",
     subtitle = subtitle
   )
-aet <- terra::rast(file.path(sim_dir, "04_interannual_aet_NAD83.tif"))
+aet <- terra::rast(file.path(sim_dir, "interannual_aet_NAD83.tif"))
 aetplot <- ggplot() +
   geom_spatraster(data = aet) +
   scale_fill_viridis_c(option = "inferno") +
@@ -150,7 +175,7 @@ aetplot <- ggplot() +
     title = "Actual Evapotranspiration",
     subtitle = subtitle
   )
-gwr <- terra::rast(file.path(sim_dir, "05_interannual_gwr_NAD83.tif"))
+gwr <- terra::rast(file.path(sim_dir, "interannual_gwr_NAD83.tif"))
 gwrplot <- ggplot() +
   geom_spatraster(data = gwr) +
   scale_fill_viridis_c(option = "inferno") +

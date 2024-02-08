@@ -85,7 +85,20 @@ result$simulation_metadata
 sim_dir <- file.path(getwd(), paste0("simulation_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
 
 # 5.1-write output files
+# CSV
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
+# NetCDF
+rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
+  "x" = list(
+    longname = "Qc lambert NAD83 epsg32198 Est",
+    unit = "m"
+  ),
+  "y" = list(
+    longname = "Qc lambert NAD83 epsg32198 North",
+    unit = "m"
+  )
+))
+# Rasters
 rechaRge::write_recharge_rasters(
   HB,
   water_budget = water_budget,
@@ -97,8 +110,8 @@ rechaRge::write_recharge_rasters(
 # 5.2-list simulation output files
 list.files(sim_dir)
 
-data.table::fread(file.path(sim_dir, "01_bilan_spat_month.csv"))
-data.table::fread(file.path(sim_dir, "02_bilan_unspat_month.csv"))
+data.table::fread(file.path(sim_dir, "bilan_spat_month.csv"))
+data.table::fread(file.path(sim_dir, "bilan_unspat_month.csv"))
 
 # data viz
 library(tidyterra)
@@ -109,7 +122,7 @@ subtitle <- ifelse(simul_period[1] == simul_period[2],
   paste0("In ", simul_period[1]),
   paste0("From ", simul_period[1], " to ", simul_period[2])
 )
-runoff <- terra::rast(file.path(sim_dir, "03_interannual_runoff_NAD83.tif"))
+runoff <- terra::rast(file.path(sim_dir, "interannual_runoff_NAD83.tif"))
 runoffplot <- ggplot() +
   geom_spatraster(data = runoff) +
   scale_fill_viridis_c(option = "inferno") +
@@ -118,7 +131,7 @@ runoffplot <- ggplot() +
     title = "Runoff",
     subtitle = subtitle
   )
-aet <- terra::rast(file.path(sim_dir, "04_interannual_aet_NAD83.tif"))
+aet <- terra::rast(file.path(sim_dir, "interannual_aet_NAD83.tif"))
 aetplot <- ggplot() +
   geom_spatraster(data = aet) +
   scale_fill_viridis_c(option = "inferno") +
@@ -127,7 +140,7 @@ aetplot <- ggplot() +
     title = "Actual Evapotranspiration",
     subtitle = subtitle
   )
-gwr <- terra::rast(file.path(sim_dir, "05_interannual_gwr_NAD83.tif"))
+gwr <- terra::rast(file.path(sim_dir, "interannual_gwr_NAD83.tif"))
 gwrplot <- ggplot() +
   geom_spatraster(data = gwr) +
   scale_fill_viridis_c(option = "inferno") +
