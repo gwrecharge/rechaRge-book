@@ -78,6 +78,17 @@ water_budget <- rechaRge::compute_recharge(
 )
 ```
 
+The water budget data set is per year-month in each RCN cell:
+
+* `vi`, the vertical inflow
+* `t_mean`, the mean temperature
+* `runoff`, the runoff
+* `pet`, the potential evapotranspiration
+* `aet`, the actual evapotranspiration
+* `gwr`, the groundwater recharge
+* `runoff_2`, the excess runoff
+
+The head of this data set is:
 
 ```{r, echo=FALSE}
 knitr::kable(head(water_budget))
@@ -106,7 +117,20 @@ Save the simulation results:
 sim_dir <- file.path(tempdir(), paste0("simulation_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
 
 # Write output files
+# CSV
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
+# NetCDF
+rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
+  "lon" = list(
+    longname = "Qc lambert NAD83 epsg32198 Est",
+    unit = "m"
+  ),
+  "lat" = list(
+    longname = "Qc lambert NAD83 epsg32198 North",
+    unit = "m"
+  )
+))
+# Rasters
 rechaRge::write_recharge_rasters(
   HB,
   water_budget = water_budget,
@@ -115,11 +139,44 @@ rechaRge::write_recharge_rasters(
   output_dir = sim_dir
 )
 
+
 # List simulation output files
 list.files(sim_dir)
 ```
 
 ### Data visualization
+
+Visualize the saved NetCDF file:
+
+```{r, message=FALSE}
+library(ncdf4)
+library(lattice)
+library(viridisLite)
+
+# Extract GWR data
+nc <- nc_open(file.path(sim_dir, "water_budget.nc"))
+gwr <- ncvar_get(nc, "gwr")
+gwratt <- ncatt_get(nc, "gwr")
+lon <- ncvar_get(nc, "lon")
+lonatt <- ncatt_get(nc, "lon")
+lat <- ncvar_get(nc, "lat")
+latatt <- ncatt_get(nc, "lat")
+time <- ncvar_get(nc, "time")
+nc_close(nc)
+
+# Render the 18th month
+month <- 18
+gwr1 <- gwr[,,month]
+grid <- expand.grid(lon=lon, lat=lat)
+title <- paste0(gwratt$long_name, " (", gwratt$units, ") ", " #", month)
+xlab <- paste0(latatt$long_name, " (", latatt$units, ")")
+ylab <- paste0(lonatt$long_name, " (", lonatt$units, ")")
+levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=inferno(100),
+          main=title, xlab=xlab, ylab=ylab)
+
+```
+
+
 
 Visualize the saved raster files:
 
@@ -132,7 +189,7 @@ subtitle <- ifelse(simul_period[1] == simul_period[2],
   paste0("In ", simul_period[1]),
   paste0("From ", simul_period[1], " to ", simul_period[2])
 )
-runoff <- terra::rast(file.path(sim_dir, "03_interannual_runoff_NAD83.tif"))
+runoff <- terra::rast(file.path(sim_dir, "interannual_runoff_NAD83.tif"))
 runoffplot <- ggplot() +
   geom_spatraster(data = runoff) +
   scale_fill_viridis_c(option = "inferno") +
@@ -141,7 +198,7 @@ runoffplot <- ggplot() +
     title = "Runoff",
     subtitle = subtitle
   )
-aet <- terra::rast(file.path(sim_dir, "04_interannual_aet_NAD83.tif"))
+aet <- terra::rast(file.path(sim_dir, "interannual_aet_NAD83.tif"))
 aetplot <- ggplot() +
   geom_spatraster(data = aet) +
   scale_fill_viridis_c(option = "inferno") +
@@ -150,13 +207,13 @@ aetplot <- ggplot() +
     title = "Actual Evapotranspiration",
     subtitle = subtitle
   )
-gwr <- terra::rast(file.path(sim_dir, "05_interannual_gwr_NAD83.tif"))
+gwr <- terra::rast(file.path(sim_dir, "interannual_gwr_NAD83.tif"))
 gwrplot <- ggplot() +
   geom_spatraster(data = gwr) +
   scale_fill_viridis_c(option = "inferno") +
   labs(
     fill = "",
-    title = "Ground Water Recharge",
+    title = "Groundwater Recharge",
     subtitle = subtitle
   )
 cowplot::plot_grid(runoffplot, aetplot, gwrplot)

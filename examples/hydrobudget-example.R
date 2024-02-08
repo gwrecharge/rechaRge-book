@@ -85,7 +85,20 @@ result$simulation_metadata
 sim_dir <- file.path(getwd(), paste0("simulation_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
 
 # 5.1-write output files
+# CSV
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
+# NetCDF
+rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
+  "lon" = list(
+    longname = "Qc lambert NAD83 epsg32198 Est",
+    unit = "m"
+  ),
+  "lat" = list(
+    longname = "Qc lambert NAD83 epsg32198 North",
+    unit = "m"
+  )
+))
+# Rasters
 rechaRge::write_recharge_rasters(
   HB,
   water_budget = water_budget,
@@ -94,13 +107,38 @@ rechaRge::write_recharge_rasters(
   output_dir = sim_dir
 )
 
-# 5.2-list simulation output files
+# List simulation output files
 list.files(sim_dir)
 
-data.table::fread(file.path(sim_dir, "01_bilan_spat_month.csv"))
-data.table::fread(file.path(sim_dir, "02_bilan_unspat_month.csv"))
+# CSV files
+data.table::fread(file.path(sim_dir, "bilan_spat_month.csv"))
+data.table::fread(file.path(sim_dir, "bilan_unspat_month.csv"))
 
-# data viz
+# NetCDF data viz
+library(ncdf4)
+library(lattice)
+library(viridisLite)
+# Extract GWR data
+nc <- nc_open(file.path(sim_dir, "water_budget.nc"))
+gwr <- ncvar_get(nc, "gwr")
+gwratt <- ncatt_get(nc, "gwr")
+lon <- ncvar_get(nc, "lon")
+lonatt <- ncatt_get(nc, "lon")
+lat <- ncvar_get(nc, "lat")
+latatt <- ncatt_get(nc, "lat")
+time <- ncvar_get(nc, "time")
+nc_close(nc)
+# Render the 18th month
+month <- 18
+gwr1 <- gwr[,,month]
+grid <- expand.grid(lon=lon, lat=lat)
+title <- paste0(gwratt$long_name, " (", gwratt$units, ") ", " #", month)
+xlab <- paste0(latatt$long_name, " (", latatt$units, ")")
+ylab <- paste0(lonatt$long_name, " (", lonatt$units, ")")
+levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=inferno(100),
+          main=title, xlab=xlab, ylab=ylab)
+
+# Raster data viz
 library(tidyterra)
 library(terra)
 library(ggplot2)
@@ -109,7 +147,7 @@ subtitle <- ifelse(simul_period[1] == simul_period[2],
   paste0("In ", simul_period[1]),
   paste0("From ", simul_period[1], " to ", simul_period[2])
 )
-runoff <- terra::rast(file.path(sim_dir, "03_interannual_runoff_NAD83.tif"))
+runoff <- terra::rast(file.path(sim_dir, "interannual_runoff_NAD83.tif"))
 runoffplot <- ggplot() +
   geom_spatraster(data = runoff) +
   scale_fill_viridis_c(option = "inferno") +
@@ -118,7 +156,7 @@ runoffplot <- ggplot() +
     title = "Runoff",
     subtitle = subtitle
   )
-aet <- terra::rast(file.path(sim_dir, "04_interannual_aet_NAD83.tif"))
+aet <- terra::rast(file.path(sim_dir, "interannual_aet_NAD83.tif"))
 aetplot <- ggplot() +
   geom_spatraster(data = aet) +
   scale_fill_viridis_c(option = "inferno") +
@@ -127,7 +165,7 @@ aetplot <- ggplot() +
     title = "Actual Evapotranspiration",
     subtitle = subtitle
   )
-gwr <- terra::rast(file.path(sim_dir, "05_interannual_gwr_NAD83.tif"))
+gwr <- terra::rast(file.path(sim_dir, "interannual_gwr_NAD83.tif"))
 gwrplot <- ggplot() +
   geom_spatraster(data = gwr) +
   scale_fill_viridis_c(option = "inferno") +
