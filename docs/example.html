@@ -430,44 +430,62 @@ div.csl-indent {
 </div>
 <div id="data-visualization" class="section level3 hasAnchor" number="5.1.5">
 <h3><span class="header-section-number">5.1.5</span> Data visualization<a href="example.html#data-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Visualize the saved raster files:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="example.html#cb13-1" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
-<span id="cb13-2"><a href="example.html#cb13-2" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb13-3"><a href="example.html#cb13-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb13-4"><a href="example.html#cb13-4" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
-<span id="cb13-5"><a href="example.html#cb13-5" tabindex="-1"></a>subtitle <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(simul_period[<span class="dv">1</span>] <span class="sc">==</span> simul_period[<span class="dv">2</span>],</span>
-<span id="cb13-6"><a href="example.html#cb13-6" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;In &quot;</span>, simul_period[<span class="dv">1</span>]),</span>
-<span id="cb13-7"><a href="example.html#cb13-7" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;From &quot;</span>, simul_period[<span class="dv">1</span>], <span class="st">&quot; to &quot;</span>, simul_period[<span class="dv">2</span>])</span>
-<span id="cb13-8"><a href="example.html#cb13-8" tabindex="-1"></a>)</span>
-<span id="cb13-9"><a href="example.html#cb13-9" tabindex="-1"></a>runoff <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_runoff_NAD83.tif&quot;</span>))</span>
-<span id="cb13-10"><a href="example.html#cb13-10" tabindex="-1"></a>runoffplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb13-11"><a href="example.html#cb13-11" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> runoff) <span class="sc">+</span></span>
-<span id="cb13-12"><a href="example.html#cb13-12" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
-<span id="cb13-13"><a href="example.html#cb13-13" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-14"><a href="example.html#cb13-14" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb13-15"><a href="example.html#cb13-15" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Runoff&quot;</span>,</span>
-<span id="cb13-16"><a href="example.html#cb13-16" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
-<span id="cb13-17"><a href="example.html#cb13-17" tabindex="-1"></a>  )</span>
-<span id="cb13-18"><a href="example.html#cb13-18" tabindex="-1"></a>aet <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_aet_NAD83.tif&quot;</span>))</span>
-<span id="cb13-19"><a href="example.html#cb13-19" tabindex="-1"></a>aetplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb13-20"><a href="example.html#cb13-20" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> aet) <span class="sc">+</span></span>
-<span id="cb13-21"><a href="example.html#cb13-21" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
-<span id="cb13-22"><a href="example.html#cb13-22" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-23"><a href="example.html#cb13-23" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb13-24"><a href="example.html#cb13-24" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Actual Evapotranspiration&quot;</span>,</span>
-<span id="cb13-25"><a href="example.html#cb13-25" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
-<span id="cb13-26"><a href="example.html#cb13-26" tabindex="-1"></a>  )</span>
-<span id="cb13-27"><a href="example.html#cb13-27" tabindex="-1"></a>gwr <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_gwr_NAD83.tif&quot;</span>))</span>
-<span id="cb13-28"><a href="example.html#cb13-28" tabindex="-1"></a>gwrplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb13-29"><a href="example.html#cb13-29" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> gwr) <span class="sc">+</span></span>
-<span id="cb13-30"><a href="example.html#cb13-30" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
-<span id="cb13-31"><a href="example.html#cb13-31" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-32"><a href="example.html#cb13-32" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb13-33"><a href="example.html#cb13-33" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Ground Water Recharge&quot;</span>,</span>
-<span id="cb13-34"><a href="example.html#cb13-34" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
-<span id="cb13-35"><a href="example.html#cb13-35" tabindex="-1"></a>  )</span>
-<span id="cb13-36"><a href="example.html#cb13-36" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(runoffplot, aetplot, gwrplot)</span></code></pre></div>
+<p>Visualize the saved NetCDF file:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="example.html#cb13-1" tabindex="-1"></a><span class="fu">library</span>(ncdf4)</span>
+<span id="cb13-2"><a href="example.html#cb13-2" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb13-3"><a href="example.html#cb13-3" tabindex="-1"></a><span class="fu">library</span>(viridisLite)</span>
+<span id="cb13-4"><a href="example.html#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="example.html#cb13-5" tabindex="-1"></a><span class="co"># Extract GWR data</span></span>
+<span id="cb13-6"><a href="example.html#cb13-6" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">nc_open</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;water_budget.nc&quot;</span>))</span>
+<span id="cb13-7"><a href="example.html#cb13-7" tabindex="-1"></a>gwr <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;gwr&quot;</span>)</span>
+<span id="cb13-8"><a href="example.html#cb13-8" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;lon&quot;</span>)</span>
+<span id="cb13-9"><a href="example.html#cb13-9" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;lat&quot;</span>)</span>
+<span id="cb13-10"><a href="example.html#cb13-10" tabindex="-1"></a>time <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;time&quot;</span>)</span>
+<span id="cb13-11"><a href="example.html#cb13-11" tabindex="-1"></a><span class="fu">nc_close</span>(nc)</span>
+<span id="cb13-12"><a href="example.html#cb13-12" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="example.html#cb13-13" tabindex="-1"></a><span class="co"># Render the 18th month</span></span>
+<span id="cb13-14"><a href="example.html#cb13-14" tabindex="-1"></a>gwr1 <span class="ot">&lt;-</span> gwr[,,<span class="dv">18</span>]</span>
+<span id="cb13-15"><a href="example.html#cb13-15" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">lon=</span>lon, <span class="at">lat=</span>lat)</span>
+<span id="cb13-16"><a href="example.html#cb13-16" tabindex="-1"></a><span class="fu">levelplot</span>(gwr1 <span class="sc">~</span> lon <span class="sc">*</span> lat, <span class="at">data=</span>grid, <span class="at">pretty=</span>T, <span class="at">col.regions=</span><span class="fu">magma</span>(<span class="dv">100</span>))</span></code></pre></div>
 <p><img src="rechaRge-book_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Visualize the saved raster files:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="example.html#cb14-1" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
+<span id="cb14-2"><a href="example.html#cb14-2" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb14-3"><a href="example.html#cb14-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb14-4"><a href="example.html#cb14-4" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb14-5"><a href="example.html#cb14-5" tabindex="-1"></a>subtitle <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(simul_period[<span class="dv">1</span>] <span class="sc">==</span> simul_period[<span class="dv">2</span>],</span>
+<span id="cb14-6"><a href="example.html#cb14-6" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;In &quot;</span>, simul_period[<span class="dv">1</span>]),</span>
+<span id="cb14-7"><a href="example.html#cb14-7" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;From &quot;</span>, simul_period[<span class="dv">1</span>], <span class="st">&quot; to &quot;</span>, simul_period[<span class="dv">2</span>])</span>
+<span id="cb14-8"><a href="example.html#cb14-8" tabindex="-1"></a>)</span>
+<span id="cb14-9"><a href="example.html#cb14-9" tabindex="-1"></a>runoff <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_runoff_NAD83.tif&quot;</span>))</span>
+<span id="cb14-10"><a href="example.html#cb14-10" tabindex="-1"></a>runoffplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-11"><a href="example.html#cb14-11" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> runoff) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="example.html#cb14-12" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-13"><a href="example.html#cb14-13" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-14"><a href="example.html#cb14-14" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb14-15"><a href="example.html#cb14-15" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Runoff&quot;</span>,</span>
+<span id="cb14-16"><a href="example.html#cb14-16" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
+<span id="cb14-17"><a href="example.html#cb14-17" tabindex="-1"></a>  )</span>
+<span id="cb14-18"><a href="example.html#cb14-18" tabindex="-1"></a>aet <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_aet_NAD83.tif&quot;</span>))</span>
+<span id="cb14-19"><a href="example.html#cb14-19" tabindex="-1"></a>aetplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-20"><a href="example.html#cb14-20" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> aet) <span class="sc">+</span></span>
+<span id="cb14-21"><a href="example.html#cb14-21" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-22"><a href="example.html#cb14-22" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-23"><a href="example.html#cb14-23" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb14-24"><a href="example.html#cb14-24" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Actual Evapotranspiration&quot;</span>,</span>
+<span id="cb14-25"><a href="example.html#cb14-25" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
+<span id="cb14-26"><a href="example.html#cb14-26" tabindex="-1"></a>  )</span>
+<span id="cb14-27"><a href="example.html#cb14-27" tabindex="-1"></a>gwr <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_gwr_NAD83.tif&quot;</span>))</span>
+<span id="cb14-28"><a href="example.html#cb14-28" tabindex="-1"></a>gwrplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-29"><a href="example.html#cb14-29" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> gwr) <span class="sc">+</span></span>
+<span id="cb14-30"><a href="example.html#cb14-30" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-31"><a href="example.html#cb14-31" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-32"><a href="example.html#cb14-32" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb14-33"><a href="example.html#cb14-33" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Ground Water Recharge&quot;</span>,</span>
+<span id="cb14-34"><a href="example.html#cb14-34" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
+<span id="cb14-35"><a href="example.html#cb14-35" tabindex="-1"></a>  )</span>
+<span id="cb14-36"><a href="example.html#cb14-36" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(runoffplot, aetplot, gwrplot)</span></code></pre></div>
+<p><img src="rechaRge-book_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 
 </div>
 </div>

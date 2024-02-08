@@ -456,6 +456,31 @@ Save the simulation results:
 \hypertarget{data-visualization}{%
 \subsection{Data visualization}\label{data-visualization}}
 
+Visualize the saved NetCDF file:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ncdf4)}
+\FunctionTok{library}\NormalTok{(lattice)}
+\FunctionTok{library}\NormalTok{(viridisLite)}
+
+\CommentTok{\# Extract GWR data}
+\NormalTok{nc }\OtherTok{\textless{}{-}} \FunctionTok{nc\_open}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"water\_budget.nc"}\NormalTok{))}
+\NormalTok{gwr }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"gwr"}\NormalTok{)}
+\NormalTok{lon }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"lon"}\NormalTok{)}
+\NormalTok{lat }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"lat"}\NormalTok{)}
+\NormalTok{time }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"time"}\NormalTok{)}
+\FunctionTok{nc\_close}\NormalTok{(nc)}
+
+\CommentTok{\# Render the 18th month}
+\NormalTok{gwr1 }\OtherTok{\textless{}{-}}\NormalTok{ gwr[,,}\DecValTok{18}\NormalTok{]}
+\NormalTok{grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lon=}\NormalTok{lon, }\AttributeTok{lat=}\NormalTok{lat)}
+\FunctionTok{levelplot}\NormalTok{(gwr1 }\SpecialCharTok{\textasciitilde{}}\NormalTok{ lon }\SpecialCharTok{*}\NormalTok{ lat, }\AttributeTok{data=}\NormalTok{grid, }\AttributeTok{pretty=}\NormalTok{T, }\AttributeTok{col.regions=}\FunctionTok{magma}\NormalTok{(}\DecValTok{100}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{rechaRge-book_files/figure-latex/unnamed-chunk-12-1.pdf}
+
 Visualize the saved raster files:
 
 \begin{Shaded}
@@ -499,7 +524,7 @@ Visualize the saved raster files:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{rechaRge-book_files/figure-latex/unnamed-chunk-12-1.pdf}
+\includegraphics{rechaRge-book_files/figure-latex/unnamed-chunk-13-1.pdf}
 
 \hypertarget{final-words}{%
 \chapter{Final Words}\label{final-words}}

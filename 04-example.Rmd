@@ -68,7 +68,7 @@ simul_period <- c(2010, 2017)
 
 Compute the water budget using the HydroBudget model:
 
-```{r, message=FALSE}
+```{r, cache=TRUE, message=FALSE}
 water_budget <- rechaRge::compute_recharge(
   HB,
   rcn = input_rcn,
@@ -145,6 +145,30 @@ list.files(sim_dir)
 ```
 
 ### Data visualization
+
+Visualize the saved NetCDF file:
+
+```{r, message=FALSE}
+library(ncdf4)
+library(lattice)
+library(viridisLite)
+
+# Extract GWR data
+nc <- nc_open(file.path(sim_dir, "water_budget.nc"))
+gwr <- ncvar_get(nc, "gwr")
+lon <- ncvar_get(nc, "lon")
+lat <- ncvar_get(nc, "lat")
+time <- ncvar_get(nc, "time")
+nc_close(nc)
+
+# Render the 18th month
+gwr1 <- gwr[,,18]
+grid <- expand.grid(lon=lon, lat=lat)
+levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=magma(100))
+
+```
+
+
 
 Visualize the saved raster files:
 
