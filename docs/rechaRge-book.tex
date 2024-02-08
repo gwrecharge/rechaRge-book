@@ -423,11 +423,11 @@ Save the simulation results:
 \NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_results}\NormalTok{(HB, water\_budget, }\AttributeTok{output\_dir =}\NormalTok{ sim\_dir)}
 \CommentTok{\# NetCDF}
 \NormalTok{rechaRge}\SpecialCharTok{::}\FunctionTok{write\_recharge\_results}\NormalTok{(HB, water\_budget, }\AttributeTok{output\_dir =}\NormalTok{ sim\_dir, }\AttributeTok{format =} \StringTok{"nc"}\NormalTok{, }\AttributeTok{input\_rcn =}\NormalTok{ input\_rcn, }\AttributeTok{names =} \FunctionTok{list}\NormalTok{(}
-  \StringTok{"x"} \OtherTok{=} \FunctionTok{list}\NormalTok{(}
+  \StringTok{"lon"} \OtherTok{=} \FunctionTok{list}\NormalTok{(}
     \AttributeTok{longname =} \StringTok{"Qc lambert NAD83 epsg32198 Est"}\NormalTok{,}
     \AttributeTok{unit =} \StringTok{"m"}
 \NormalTok{  ),}
-  \StringTok{"y"} \OtherTok{=} \FunctionTok{list}\NormalTok{(}
+  \StringTok{"lat"} \OtherTok{=} \FunctionTok{list}\NormalTok{(}
     \AttributeTok{longname =} \StringTok{"Qc lambert NAD83 epsg32198 North"}\NormalTok{,}
     \AttributeTok{unit =} \StringTok{"m"}
 \NormalTok{  )}

@@ -89,11 +89,11 @@ sim_dir <- file.path(getwd(), paste0("simulation_HydroBudget_", format(Sys.time(
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
 # NetCDF
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
-  "x" = list(
+  "lon" = list(
     longname = "Qc lambert NAD83 epsg32198 Est",
     unit = "m"
   ),
-  "y" = list(
+  "lat" = list(
     longname = "Qc lambert NAD83 epsg32198 North",
     unit = "m"
   )
@@ -107,13 +107,14 @@ rechaRge::write_recharge_rasters(
   output_dir = sim_dir
 )
 
-# 5.2-list simulation output files
+# List simulation output files
 list.files(sim_dir)
 
+# CSV files
 data.table::fread(file.path(sim_dir, "bilan_spat_month.csv"))
 data.table::fread(file.path(sim_dir, "bilan_unspat_month.csv"))
 
-# data viz
+# Raster data viz
 library(tidyterra)
 library(terra)
 library(ggplot2)
