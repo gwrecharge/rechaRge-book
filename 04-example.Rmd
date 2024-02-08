@@ -85,7 +85,7 @@ The water budget data set is per year-month in each RCN cell:
 * `runoff`, the runoff
 * `pet`, the potential evapotranspiration
 * `aet`, the actual evapotranspiration
-* `gwr`, the ground water recharge
+* `gwr`, the groundwater recharge
 * `runoff_2`, the excess runoff
 
 The head of this data set is:
@@ -213,7 +213,7 @@ gwrplot <- ggplot() +
   scale_fill_viridis_c(option = "inferno") +
   labs(
     fill = "",
-    title = "Ground Water Recharge",
+    title = "Groundwater Recharge",
     subtitle = subtitle
   )
 cowplot::plot_grid(runoffplot, aetplot, gwrplot)
