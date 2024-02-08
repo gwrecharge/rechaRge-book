@@ -116,7 +116,8 @@ data.table::fread(file.path(sim_dir, "bilan_unspat_month.csv"))
 
 # NetCDF data viz
 library(ncdf4)
-library(ggplot2)
+library(lattice)
+library(viridisLite)
 # Extract GWR data
 nc <- nc_open(file.path(sim_dir, "water_budget.nc"))
 gwr <- ncvar_get(nc, "gwr")
@@ -125,11 +126,14 @@ lat <- ncvar_get(nc, "lat")
 time <- ncvar_get(nc, "time")
 nc_close(nc)
 # Render the 18th month
-gwr1 <- gwr[,,18]
-library(lattice)
-library(viridisLite)
+month <- 18
+gwr1 <- gwr[,,month]
 grid <- expand.grid(lon=lon, lat=lat)
-levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=magma(100))
+title <- paste0(ncatt_get(nc, "gwr")$long_name, " #", month)
+xlab <- ncatt_get(nc, "lat")$long_name
+ylab <- ncatt_get(nc, "lon")$long_name
+levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=magma(100),
+          main=title, xlab=xlab, ylab=ylab)
 
 # Raster data viz
 library(tidyterra)
