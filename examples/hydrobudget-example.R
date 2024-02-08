@@ -131,7 +131,7 @@ grid <- expand.grid(lon=lon, lat=lat)
 title <- paste0(ncatt_get(nc, "gwr")$long_name, " #", month)
 xlab <- ncatt_get(nc, "lat")$long_name
 ylab <- ncatt_get(nc, "lon")$long_name
-levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=magma(100),
+levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=inferno(100),
           main=title, xlab=xlab, ylab=ylab)
 nc_close(nc)
 

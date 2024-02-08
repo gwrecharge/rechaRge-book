@@ -478,7 +478,7 @@ Visualize the saved NetCDF file:
 \NormalTok{title }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"gwr"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{long\_name, }\StringTok{" \#"}\NormalTok{, month)}
 \NormalTok{xlab }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"lat"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{long\_name}
 \NormalTok{ylab }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"lon"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{long\_name}
-\FunctionTok{levelplot}\NormalTok{(gwr1 }\SpecialCharTok{\textasciitilde{}}\NormalTok{ lon }\SpecialCharTok{*}\NormalTok{ lat, }\AttributeTok{data=}\NormalTok{grid, }\AttributeTok{pretty=}\NormalTok{T, }\AttributeTok{col.regions=}\FunctionTok{magma}\NormalTok{(}\DecValTok{100}\NormalTok{),}
+\FunctionTok{levelplot}\NormalTok{(gwr1 }\SpecialCharTok{\textasciitilde{}}\NormalTok{ lon }\SpecialCharTok{*}\NormalTok{ lat, }\AttributeTok{data=}\NormalTok{grid, }\AttributeTok{pretty=}\NormalTok{T, }\AttributeTok{col.regions=}\FunctionTok{inferno}\NormalTok{(}\DecValTok{100}\NormalTok{),}
           \AttributeTok{main=}\NormalTok{title, }\AttributeTok{xlab=}\NormalTok{xlab, }\AttributeTok{ylab=}\NormalTok{ylab)}
 \end{Highlighting}
 \end{Shaded}
