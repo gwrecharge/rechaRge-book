@@ -467,29 +467,27 @@ Visualize the saved NetCDF file:
 \CommentTok{\# Extract GWR data}
 \NormalTok{nc }\OtherTok{\textless{}{-}} \FunctionTok{nc\_open}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(sim\_dir, }\StringTok{"water\_budget.nc"}\NormalTok{))}
 \NormalTok{gwr }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"gwr"}\NormalTok{)}
+\NormalTok{gwratt }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"gwr"}\NormalTok{)}
 \NormalTok{lon }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"lon"}\NormalTok{)}
+\NormalTok{lonatt }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"lon"}\NormalTok{)}
 \NormalTok{lat }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"lat"}\NormalTok{)}
+\NormalTok{latatt }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"lat"}\NormalTok{)}
 \NormalTok{time }\OtherTok{\textless{}{-}} \FunctionTok{ncvar\_get}\NormalTok{(nc, }\StringTok{"time"}\NormalTok{)}
+\FunctionTok{nc\_close}\NormalTok{(nc)}
 
 \CommentTok{\# Render the 18th month}
 \NormalTok{month }\OtherTok{\textless{}{-}} \DecValTok{18}
 \NormalTok{gwr1 }\OtherTok{\textless{}{-}}\NormalTok{ gwr[,,month]}
 \NormalTok{grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lon=}\NormalTok{lon, }\AttributeTok{lat=}\NormalTok{lat)}
-\NormalTok{title }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"gwr"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{long\_name, }\StringTok{" \#"}\NormalTok{, month)}
-\NormalTok{xlab }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"lat"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{long\_name}
-\NormalTok{ylab }\OtherTok{\textless{}{-}} \FunctionTok{ncatt\_get}\NormalTok{(nc, }\StringTok{"lon"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{long\_name}
+\NormalTok{title }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(gwratt}\SpecialCharTok{$}\NormalTok{long\_name, }\StringTok{" ("}\NormalTok{, gwratt}\SpecialCharTok{$}\NormalTok{units, }\StringTok{") "}\NormalTok{, }\StringTok{" \#"}\NormalTok{, month)}
+\NormalTok{xlab }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(latatt}\SpecialCharTok{$}\NormalTok{long\_name, }\StringTok{" ("}\NormalTok{, latatt}\SpecialCharTok{$}\NormalTok{units, }\StringTok{")"}\NormalTok{)}
+\NormalTok{ylab }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(lonatt}\SpecialCharTok{$}\NormalTok{long\_name, }\StringTok{" ("}\NormalTok{, lonatt}\SpecialCharTok{$}\NormalTok{units, }\StringTok{")"}\NormalTok{)}
 \FunctionTok{levelplot}\NormalTok{(gwr1 }\SpecialCharTok{\textasciitilde{}}\NormalTok{ lon }\SpecialCharTok{*}\NormalTok{ lat, }\AttributeTok{data=}\NormalTok{grid, }\AttributeTok{pretty=}\NormalTok{T, }\AttributeTok{col.regions=}\FunctionTok{inferno}\NormalTok{(}\DecValTok{100}\NormalTok{),}
           \AttributeTok{main=}\NormalTok{title, }\AttributeTok{xlab=}\NormalTok{xlab, }\AttributeTok{ylab=}\NormalTok{ylab)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics{rechaRge-book_files/figure-latex/unnamed-chunk-12-1.pdf}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{nc\_close}\NormalTok{(nc)}
-\end{Highlighting}
-\end{Shaded}
 
 Visualize the saved raster files:
 

@@ -156,21 +156,24 @@ library(viridisLite)
 # Extract GWR data
 nc <- nc_open(file.path(sim_dir, "water_budget.nc"))
 gwr <- ncvar_get(nc, "gwr")
+gwratt <- ncatt_get(nc, "gwr")
 lon <- ncvar_get(nc, "lon")
+lonatt <- ncatt_get(nc, "lon")
 lat <- ncvar_get(nc, "lat")
+latatt <- ncatt_get(nc, "lat")
 time <- ncvar_get(nc, "time")
+nc_close(nc)
 
 # Render the 18th month
 month <- 18
 gwr1 <- gwr[,,month]
 grid <- expand.grid(lon=lon, lat=lat)
-title <- paste0(ncatt_get(nc, "gwr")$long_name, " #", month)
-xlab <- ncatt_get(nc, "lat")$long_name
-ylab <- ncatt_get(nc, "lon")$long_name
+title <- paste0(gwratt$long_name, " (", gwratt$units, ") ", " #", month)
+xlab <- paste0(latatt$long_name, " (", latatt$units, ")")
+ylab <- paste0(lonatt$long_name, " (", lonatt$units, ")")
 levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=inferno(100),
           main=title, xlab=xlab, ylab=ylab)
 
-nc_close(nc)
 ```
 
 
