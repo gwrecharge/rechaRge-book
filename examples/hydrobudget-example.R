@@ -124,7 +124,6 @@ gwr <- ncvar_get(nc, "gwr")
 lon <- ncvar_get(nc, "lon")
 lat <- ncvar_get(nc, "lat")
 time <- ncvar_get(nc, "time")
-nc_close(nc)
 # Render the 18th month
 month <- 18
 gwr1 <- gwr[,,month]
@@ -134,6 +133,7 @@ xlab <- ncatt_get(nc, "lat")$long_name
 ylab <- ncatt_get(nc, "lon")$long_name
 levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=magma(100),
           main=title, xlab=xlab, ylab=ylab)
+nc_close(nc)
 
 # Raster data viz
 library(tidyterra)
