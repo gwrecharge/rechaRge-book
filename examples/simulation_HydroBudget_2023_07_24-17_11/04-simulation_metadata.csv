@@ -1,2 +1,0 @@
-gauging_stat,cal_beg,cal_end,val_beg,val_end,T_snow,T_m,C_m,TT_F,F_T,t_API,f_runoff,sw_m,f_inf,KGE_qtot_cal,KGE_qbase_cal,KGE_qtot_val,KGE_qbase_val,qtot_sim,aet_sim,gwr_sim,time,KGE_mean_cal,KGE_mean_val
-23702,2010,2015,2016,2017,0,2.1,6.2,-17.6,16.4,3.9,0.63,431,0.07,0.85492175025181,0.720322425458184,0.923339595545471,0.72742364436997,623.735387537993,536.982386018239,127.713366261398,2023_07_24-17_18,0.787622087854997,0.82538161995772
