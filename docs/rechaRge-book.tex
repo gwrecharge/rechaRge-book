@@ -127,7 +127,7 @@
 
 \title{A Minimal Book Example}
 \author{Yihui Xie}
-\date{2024-02-08}
+\date{2024-02-12}
 
 \begin{document}
 \maketitle
@@ -366,7 +366,7 @@ The water budget data set is per year-month in each RCN cell:
 \item
   \texttt{aet}, the actual evapotranspiration
 \item
-  \texttt{gwr}, the ground water recharge
+  \texttt{gwr}, the groundwater recharge
 \item
   \texttt{runoff\_2}, the excess runoff
 \end{itemize}
@@ -525,7 +525,7 @@ Visualize the saved raster files:
   \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"inferno"}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{labs}\NormalTok{(}
     \AttributeTok{fill =} \StringTok{""}\NormalTok{,}
-    \AttributeTok{title =} \StringTok{"Ground Water Recharge"}\NormalTok{,}
+    \AttributeTok{title =} \StringTok{"Groundwater Recharge"}\NormalTok{,}
     \AttributeTok{subtitle =}\NormalTok{ subtitle}
 \NormalTok{  )}
 \NormalTok{cowplot}\SpecialCharTok{::}\FunctionTok{plot\_grid}\NormalTok{(runoffplot, aetplot, gwrplot)}
