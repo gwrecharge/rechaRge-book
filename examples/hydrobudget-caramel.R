@@ -1,83 +1,58 @@
 library(rechaRge)
 library(caRamel)
-
-# Input data
-# use input example files provided by the package
-base_url <-
-  "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
-input_rcn <-
-  data.table::fread(paste0(base_url, "rcn.csv.gz")) # RCN values per RCN cell ID
-input_climate <-
-  data.table::fread(paste0(base_url, "climate.csv.gz")) # precipitation total in mm/d per climate cell ID
-input_rcn_climate <-
-  data.table::fread(paste0(base_url, "rcn_climate.csv.gz")) # relation between climate and RCN cell IDs
-input_rcn_gauging <-
-  data.table::fread(paste0(base_url, "rcn_gauging.csv.gz")) # relation between gaugins station and RCN cell IDs
-input_observed_flow <-
-  data.table::fread(paste0(base_url, "observed_flow.csv.gz")) # flow rates in mm/d
-input_alpha_lyne_hollick <-
-  data.table::fread(paste0(base_url, "alpha_lyne_hollick.csv.gz"))
+library(data.table)
 
 # Number of objectives
-#nobj <- 3 #for rmse qtot, qbase, p-q
-nobj <- 2 #for rmse qtot, qbase
-#number of variables
-#nvar <- 8 #8 calibration parameters
-nvar <-
-  7 #if time to freez the soil is taken out of the optimization
-#all the objectives are to be minimized
-#minmax <- c(FALSE, FALSE, FALSE) # to minimize the rmse
-#minmax <- c(TRUE, TRUE, TRUE) # to maximize the KGE
-minmax <- c(TRUE, TRUE) # to maximize the KGE without the P-Q
-#range of the parameters
+nobj <- 2
+# Number of variables
+nvar <- 8
+# All the objectives are to be maximized
+minmax <- c(TRUE, TRUE)
+# Range of the parameters
 bounds <- matrix(nrow = nvar, ncol = 2)
-#bounds[, 1] <- c(-2, 3, 5, -20, 1, 0.5, 0.01, 50)
-#bounds[, 1] <- c(-1, 3, -20, 3, 0.5, 0.01, 200)    #for watershed 19
-#bounds[, 1] <- c(-1, 3, -17, 2.5, 0.5, 0.01, 95)    #for watershed 25
-#bounds[, 1] <- c(-1, 3, -20, 3, 0.53, 0.05, 200)    #for watershed 24
-#bounds[, 1] <- c(0, 3.5, -7, 3.5, 0.5, 0.03, 400)    #for watershed 0
-#bounds[, 1] <- c(0.5, 3.5, -20, 2.4, 0.52, 0.08, 250)    #for watershed 13
-bounds[, 1] <-
-  c(1, 4,-20, 3.05, 0.5, 0.01, 160)    #for watershed 47
-#bounds[, 1] <- c(-1, 3, -16, 3.2, 0.52, 0.05, 400)    #for watershed 01
-#bounds[, 1] <- c(1.3, 4.5, -20, 2, 0.52, 0.02, 350)    #for watershed 16
+bounds[, 1] <- c(1, 4, -20, 5, 3.05, 0.5, 160, 0.01)
+bounds[, 2] <- c(2.5, 6.5, -12, 30, 4.8, 0.6, 720, 0.05)
 
-#bounds[, 2] <- c(2, 6.5, 30, 0, 5, 1, 0.25, 900)
-#bounds[, 2] <- c(1, 4.5, -10, 4, 0.6, 0.09, 450)     #for watershed 19
-#bounds[, 2] <- c(1.5, 4.5, -4, 4.5, 0.7, 0.05, 650)     #for watershed 25
-#bounds[, 2] <- c(2, 5.5, -12, 4.5, 0.66, 0.2, 900)     #for watershed 24
-#bounds[, 2] <- c(1.5, 5, -2, 5, 0.55, 0.07, 700)     #for watershed 0
-#bounds[, 2] <- c(2, 5, -9, 5, 0.65, 0.25, 900)     #for watershed 13
-bounds[, 2] <-
-  c(2.5, 6.5,-12, 4.8, 0.6, 0.05, 720)     #for watershed 47
-#bounds[, 2] <- c(1.5, 5, -3, 5, 0.7, 0.2, 850)     #for watershed 01
-#bounds[, 2] <- c(2.1, 6.3, -12, 4.5, 0.63, 0.09, 900)     #for watershed 16
+out_dir <- file.path(getwd(), paste0("caramel_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
+if (!dir.exists(out_dir)) {
+  dir.create(out_dir, recursive = TRUE)
+}
+print(out_dir)
 
-#T_snow<-0
-#T_m<-x1
-#C_m<-x2
-#temps_gel_sol <- x3
-#temp_gel <- x4
-#temps_api <- x5
-#facteur_rcn_2 <- x6
-#pourc_infiltration <- x7
-#volume_max_vadose<- x8
-
+# Input data
+# Quiet download
+options(datatable.showProgress = FALSE)
+# use input example files provided by the package
+base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
+input_rcn <- fread(paste0(base_url, "rcn.csv.gz")) # RCN values per RCN cell ID
+input_climate <- fread(paste0(base_url, "climate.csv.gz")) # precipitation total in mm/d per climate cell ID
+input_rcn_climate <- fread(paste0(base_url, "rcn_climate.csv.gz")) # relation between climate and RCN cell IDs
+input_rcn_gauging <- fread(paste0(base_url, "rcn_gauging.csv.gz")) # relation between gaugins station and RCN cell IDs
+input_observed_flow <- fread(paste0(base_url, "observed_flow.csv.gz")) # flow rates in mm/d
+input_alpha_lyne_hollick <- fread(paste0(base_url, "alpha_lyne_hollick.csv.gz"))
 # Simulation period
 simul_period <- c(2017, 2017)
 
 hydrobudget_eval <- function(i) {
   # Calibration parameters
   HB <- rechaRge::new_hydrobugdet(
-    T_m = x[i,1], # melting temperature (°C)
-    C_m = x[i,2], # melting coefficient (mm/°C/d)
-    TT_F = x[i,3], # Threshold temperature for soil frost (°C)
-    F_T = 16.4, # Freezing time (d)
-    t_API = x[i,4], # Antecedent precipitation index time (d)
-    f_runoff = x[i,5], # Runoff factor (-)
-    sw_m = x[i,7], # Maximum soil water content (mm)
-    f_inf = x[i,6] # infiltration factor (-)
+    T_m = x[i, 1],
+    # melting temperature (°C)
+    C_m = x[i, 2],
+    # melting coefficient (mm/°C/d)
+    TT_F = x[i, 3],
+    # Threshold temperature for soil frost (°C)
+    F_T = x[i, 4],
+    # Freezing time (d)
+    t_API = x[i, 5],
+    # Antecedent precipitation index time (d)
+    f_runoff = x[i, 6],
+    # Runoff factor (-)
+    sw_m = x[i, 7],
+    # Maximum soil water content (mm)
+    f_inf = x[i, 8] # infiltration factor (-)
   )
+  # Input data specific settings
   HB$rcn_columns <- list(
     rcn_id = "cell_ID",
     RCNII = "RCNII",
@@ -85,16 +60,11 @@ hydrobudget_eval <- function(i) {
     lat = "Y_L93"
   )
   HB$climate_columns$climate_id <- "climate_cell"
-  HB$rcn_climate_columns <- list(
-    climate_id = "climate_cell",
-    rcn_id = "cell_ID"
-  )
-  HB$rcn_gauging_columns <- list(
-    rcn_id = "cell_ID",
-    station_id = "gauging_stat"
-  )
+  HB$rcn_climate_columns <- list(climate_id = "climate_cell",
+                                 rcn_id = "cell_ID")
+  HB$rcn_gauging_columns <- list(rcn_id = "cell_ID",
+                                 station_id = "gauging_stat")
   HB$alpha_lyne_hollick_columns$station_id <- "station"
-  print(HB$calibration)
 
   # Simulation with the HydroBudget model
   water_budget <- rechaRge::compute_recharge(
@@ -102,11 +72,11 @@ hydrobudget_eval <- function(i) {
     rcn = input_rcn,
     climate = input_climate,
     rcn_climate = input_rcn_climate,
-    period = simul_period
-    # nb_core = nb_core
+    period = simul_period,
+    nb_core = 1
   )
 
-  # Do simultation
+  # Evaluate simulation quality
   result <- rechaRge::compute_simulation_quality_assessment(
     HB,
     water_budget = water_budget,
@@ -116,8 +86,31 @@ hydrobudget_eval <- function(i) {
     period = simul_period
   )
 
-  return(c(mean(result$simulation_metadata$KGE_qtot_cal), mean(result$simulation_metadata$KGE_qbase_cal)))
+  # Dump parameters and associated objectives
+  res1 <- result$simulation_metadata[1,]
+  output <- list(
+    T_m = res1$T_m,
+    C_m = res1$C_m,
+    TT_F = res1$TT_F,
+    F_T = res1$F_T,
+    t_API = res1$t_API,
+    f_runoff = res1$f_runoff,
+    sw_m = res1$sw_m,
+    f_inf = res1$f_inf,
+    KGE_qtot = mean(result$simulation_metadata$KGE_qtot_cal),
+    KGE_qbase = mean(result$simulation_metadata$KGE_qbase_cal)
+  )
+  fwrite(output, file.path(out_dir, "output.csv"), append = TRUE)
+
+  return(c(
+    output$KGE_qtot,
+    output$KGE_qbase
+  ))
 }
+
+#
+# Simulations
+#
 
 results_ <- caRamel(
   nobj = nobj,
@@ -127,8 +120,44 @@ results_ <- caRamel(
   func = hydrobudget_eval,
   popsize = 50,
   archsize = 100,
-  maxrun = 500,
+  maxrun = 200,
   prec = matrix(0.01, nrow = 1, ncol = nobj),
-
-  carallel = FALSE
+  carallel = 0
 )
+
+#
+# Results
+#
+
+# Save caRamel results
+saveRDS(results_, file.path(out_dir, "results_caramel.rds"))
+
+# Plot using caRamel
+png(file.path(out_dir, "plot_caramel.png"), width = 1000, height = 500)
+plot_caramel(results_, objnames = c("KGE_qtot", "KGE_qbase"))
+dev.off()
+
+# Plot all using ggplot
+library(ggplot2)
+# Front (as reported by caRamel)
+front <- data.table(results_$objectives)
+colnames(front) <- c("KGE_qtot", "KGE_qbase")
+# Simulations
+output <- fread(file.path(out_dir, "output.csv"))
+all <- output[, c("KGE_qtot", "KGE_qbase")]
+combined_data <- rbind(front, all)
+combined_data$group <- c(rep("All", nrow(all)), rep("Front", nrow(front)))
+ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
+  geom_point() +
+  labs(title = "Scatter plot of simulations",
+       x = "KGE_qtot", y = "KGE_qbase",
+       color = "Dataset") +
+  theme_minimal()
+ggsave(file.path(out_dir, "scatter.png"))
+
+# Filtering simulation outputs with front objectives, to get corresponding parameters
+round_digits <- 6 # precision loss
+output[, c("KGE_qtot", "KGE_qbase") := lapply(.SD, round, digits = round_digits), .SDcols = c("KGE_qtot", "KGE_qbase")]
+front[, c("KGE_qtot", "KGE_qbase") := lapply(.SD, round, digits = round_digits), .SDcols = c("KGE_qtot", "KGE_qbase")]
+output_front <- output[front, on = .(KGE_qtot, KGE_qbase)]
+fwrite(output_front, file.path(out_dir, "output_front.csv"))
