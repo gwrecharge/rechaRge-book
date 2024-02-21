@@ -1,0 +1,18 @@
+version: '3'
+services:
+  rock:
+    image: ghcr.io/gwrecharge/recharge/recharge-server:latest
+    ports:
+      - ${PORT:-8085}:8085
+    environment:
+      - ROCK_ADMINISTRATOR_NAME=${ROCK_ADMINISTRATOR_NAME:-administrator}
+      - ROCK_ADMINISTRATOR_PASSWORD=${ROCK_ADMINISTRATOR_PASSWORD:-password}
+      - ROCK_MANAGER_NAME=${ROCK_MANAGER_NAME:-manager}
+      - ROCK_MANAGER_PASSWORD=${ROCK_MANAGER_PASSWORD:-password}
+      - ROCK_USER_NAME=${ROCK_USER_NAME:-user}
+      - ROCK_USER_PASSWORD=${ROCK_USER_PASSWORD:-password}
+      - ROCK_ID=${ROCK_ID}
+      - ROCK_CLUSTER=${ROCK_CLUSTER}
+      - ROCK_TAGS=${ROCK_TAGS}
+    volumes:
+      - ${PROJECT_HOME:-./target/rock}:/srv
