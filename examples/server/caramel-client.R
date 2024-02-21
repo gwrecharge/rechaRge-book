@@ -4,13 +4,7 @@ library(rockr)
 url <- 'http://localhost:8085'
 conn <- rockr.connect('user', 'password', url = url)
 
-# Get the status of the R server (admin only)
-rockr.status(conn)
-
-# Restart the remote R server (admin only)
-rockr.start(conn)
-
-# Open an R session
+# Open a remote R session
 rockr.open(conn)
 
 # File upload and download
@@ -19,6 +13,7 @@ for (input_file in dir("../input")) {
 }
 cmd <- rockr.eval.source(conn, "caramel-server.R", async = TRUE)
 
+# Check periodically for the remote command to complete
 library(progress)
 pb <- progress_bar$new(
   format = "(:spin) :current at :tick_rate/sec",
@@ -26,7 +21,7 @@ pb <- progress_bar$new(
 finished <- FALSE
 while(!finished) {
   pb$tick()
-  Sys.sleep(10)
+  Sys.sleep(60) # seconds
   status <- rockr.command(conn, cmd$id)
   finished <- status$finished
 }
