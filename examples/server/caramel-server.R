@@ -11,11 +11,8 @@ hydrobudget_eval_builder <- function(yearFrom = 1961, yearTo = 2017) {
     # Reinstate master process lib paths into forked process
     .libPaths(libs)
 
-    # Output directory
-    out_dir <- file.path(getwd(), "caramel")
-
     # Debug exec environment
-    # fileConn<-file(file.path(out_dir, paste0("session", i, ".txt")))
+    # fileConn<-file(file.path(getwd(), paste0("session", i, ".txt")))
     # writeLines(c(
     #   jsonlite::serializeJSON(sessionInfo(), pretty = T),
     #   jsonlite::toJSON(.libPaths(), pretty = T),
@@ -99,7 +96,6 @@ hydrobudget_eval_builder <- function(yearFrom = 1961, yearTo = 2017) {
       KGE_qtot = mean(result$simulation_metadata$KGE_qtot_cal),
       KGE_qbase = mean(result$simulation_metadata$KGE_qbase_cal)
     )
-    data.table::fwrite(output, file.path(out_dir, "output.csv"), append = TRUE)
 
     return(c(output$KGE_qtot,
              output$KGE_qbase))
@@ -115,13 +111,6 @@ run_caramel <- function(yearFrom = 1961,
                         maxrun = 50,
                         carallel = 0,
                         numcores = 1) {
-  # Prepare output directory
-  out_dir <- file.path(getwd(), "caramel")
-  if (file.exists(out_dir)) {
-    unlink(out_dir, recursive = TRUE)
-  }
-  dir.create(out_dir, recursive = TRUE)
-
   # Number of objectives
   nobj <- 2
   # Number of variables
@@ -148,49 +137,12 @@ run_caramel <- function(yearFrom = 1961,
     numcores = numcores
   )
 
-  # Save caRamel results
-  saveRDS(results_, file.path(out_dir, "results_caramel.rds"))
-
-  # Plot using caRamel
-  png(file.path(out_dir, "plot_caramel.png"),
-      width = 1000,
-      height = 500)
-  caRamel::plot_caramel(results_, objnames = c("KGE_qtot", "KGE_qbase"))
-  dev.off()
-
-  # Plot all using ggplot
-  library(ggplot2)
-  # Front (as reported by caRamel)
-  front <- data.table::data.table(results_$objectives)
-  colnames(front) <- c("KGE_qtot", "KGE_qbase")
-  # Simulations
-  output <- data.table::fread(file.path(out_dir, "output.csv"))
-  all <- output[, c("KGE_qtot", "KGE_qbase")]
-  combined_data <- rbind(front, all)
-  combined_data$group <-
-    c(rep("All", nrow(all)), rep("Front", nrow(front)))
-  ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
-    geom_point() +
-    labs(
-      title = "Scatter plot of simulations",
-      x = "KGE_qtot",
-      y = "KGE_qbase",
-      color = "Dataset"
-    ) +
-    theme_minimal()
-  ggsave(file.path(out_dir, "scatter.png"))
-
   # Merging simulation outputs with front objectives, to get corresponding parameters
   output_front <- data.table::data.table(cbind(results_$parameters, results_$objectives))
   colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
-  data.table::fwrite(output_front, file.path(out_dir, "output_front.csv"))
-
-  # zip results output folder
-  files2zip <- dir("caramel", full.names = TRUE)
-  zip(zipfile = "caramel.zip", files = files2zip)
 
   return(list(
-    parameters = list(
+    args = list(
       yearFrom = yearFrom,
       yearTo = yearTo,
       popsize = popsize,
@@ -199,9 +151,7 @@ run_caramel <- function(yearFrom = 1961,
       carallel = carallel,
       numcores = numcores
     ),
-    results = results_,
-    output_front = output_front,
-    output_archive = "caramel.zip"
+    results = results_
     ))
 }
 
