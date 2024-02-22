@@ -56,7 +56,7 @@ if (!is.null(res) && res$results$success) {
   colnames(front) <- c("KGE_qtot", "KGE_qbase")
   all <- data.table(results_$total_pop[, 9:10])
   colnames(all) <- c("KGE_qtot", "KGE_qbase")
-  combined_data <- rbind(front, all)
+  combined_data <- rbind(all, front)
   combined_data$group <-
     c(rep("All", nrow(all)), rep("Front", nrow(front)))
   ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
