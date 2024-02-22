@@ -13,27 +13,20 @@ bounds <- matrix(nrow = nvar, ncol = 2)
 bounds[, 1] <- c(1, 4, -20, 5, 3.05, 0.5, 160, 0.01)
 bounds[, 2] <- c(2.5, 6.5, -12, 30, 4.8, 0.6, 720, 0.05)
 
-out_dir <- file.path(getwd(), paste0("caramel_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
-if (!dir.exists(out_dir)) {
-  dir.create(out_dir, recursive = TRUE)
-}
-print(out_dir)
-
-# Input data
-# Quiet download
-options(datatable.showProgress = FALSE)
-# use input example files provided by the package
-base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
-input_rcn <- fread(paste0(base_url, "rcn.csv.gz")) # RCN values per RCN cell ID
-input_climate <- fread(paste0(base_url, "climate.csv.gz")) # precipitation total in mm/d per climate cell ID
-input_rcn_climate <- fread(paste0(base_url, "rcn_climate.csv.gz")) # relation between climate and RCN cell IDs
-input_rcn_gauging <- fread(paste0(base_url, "rcn_gauging.csv.gz")) # relation between gaugins station and RCN cell IDs
-input_observed_flow <- fread(paste0(base_url, "observed_flow.csv.gz")) # flow rates in mm/d
-input_alpha_lyne_hollick <- fread(paste0(base_url, "alpha_lyne_hollick.csv.gz"))
-# Simulation period
-simul_period <- c(2017, 2017)
-
 hydrobudget_eval <- function(i) {
+  # Input data
+  # Quiet download
+  options(datatable.showProgress = FALSE)
+  # use input example files provided by the package
+  base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
+  input_rcn <- paste0(base_url, "rcn.csv.gz") # RCN values per RCN cell ID
+  input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/d per climate cell ID
+  input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
+  input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
+  input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
+  input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
+  # Simulation period
+  simul_period <- c(2017, 2017)
   # Calibration parameters
   HB <- rechaRge::new_hydrobugdet(
     T_m = x[i, 1],
@@ -86,25 +79,9 @@ hydrobudget_eval <- function(i) {
     period = simul_period
   )
 
-  # Dump parameters and associated objectives
-  res1 <- result$simulation_metadata[1,]
-  output <- list(
-    T_m = res1$T_m,
-    C_m = res1$C_m,
-    TT_F = res1$TT_F,
-    F_T = res1$F_T,
-    t_API = res1$t_API,
-    f_runoff = res1$f_runoff,
-    sw_m = res1$sw_m,
-    f_inf = res1$f_inf,
-    KGE_qtot = mean(result$simulation_metadata$KGE_qtot_cal),
-    KGE_qbase = mean(result$simulation_metadata$KGE_qbase_cal)
-  )
-  fwrite(output, file.path(out_dir, "output.csv"), append = TRUE)
-
   return(c(
-    output$KGE_qtot,
-    output$KGE_qbase
+    mean(result$simulation_metadata$KGE_qtot_cal),
+    mean(result$simulation_metadata$KGE_qbase_cal)
   ))
 }
 
@@ -122,30 +99,28 @@ results_ <- caRamel(
   archsize = 100,
   maxrun = 200,
   prec = matrix(0.01, nrow = 1, ncol = nobj),
-  carallel = 0
+  carallel = 1,
+  numcores = 2
 )
 
 #
 # Results
 #
 
-# Save caRamel results
-saveRDS(results_, file.path(out_dir, "results_caramel.rds"))
+# Merging simulation outputs with front objectives, to get corresponding parameters
+output_front <- data.table::data.table(cbind(results_$parameters, results_$objectives))
+colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
 
 # Plot using caRamel
-png(file.path(out_dir, "plot_caramel.png"), width = 1000, height = 500)
 plot_caramel(results_, objnames = c("KGE_qtot", "KGE_qbase"))
-dev.off()
 
 # Plot all using ggplot
 library(ggplot2)
-# Front (as reported by caRamel)
 front <- data.table(results_$objectives)
 colnames(front) <- c("KGE_qtot", "KGE_qbase")
-# Simulations
-output <- fread(file.path(out_dir, "output.csv"))
-all <- output[, c("KGE_qtot", "KGE_qbase")]
-combined_data <- rbind(front, all)
+all <- data.table(results_$total_pop[, 9:10])
+colnames(all) <- c("KGE_qtot", "KGE_qbase")
+combined_data <- rbind(all, front)
 combined_data$group <- c(rep("All", nrow(all)), rep("Front", nrow(front)))
 ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
   geom_point() +
@@ -153,11 +128,3 @@ ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
        x = "KGE_qtot", y = "KGE_qbase",
        color = "Dataset") +
   theme_minimal()
-ggsave(file.path(out_dir, "scatter.png"))
-
-# Filtering simulation outputs with front objectives, to get corresponding parameters
-round_digits <- 6 # precision loss
-output[, c("KGE_qtot", "KGE_qbase") := lapply(.SD, round, digits = round_digits), .SDcols = c("KGE_qtot", "KGE_qbase")]
-front[, c("KGE_qtot", "KGE_qbase") := lapply(.SD, round, digits = round_digits), .SDcols = c("KGE_qtot", "KGE_qbase")]
-output_front <- output[front, on = .(KGE_qtot, KGE_qbase)]
-fwrite(output_front, file.path(out_dir, "output_front.csv"))
