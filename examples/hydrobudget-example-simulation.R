@@ -64,7 +64,7 @@ water_budget <- rechaRge::compute_recharge(
 head(water_budget)
 
 # 4-Process the river flow observations and assess simulation quality
-input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
+input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gauging station and RCN cell IDs
 input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
 input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
 

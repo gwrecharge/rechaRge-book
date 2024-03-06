@@ -22,7 +22,7 @@ hydrobudget_eval <- function(i) {
   input_rcn <- paste0(base_url, "rcn.csv.gz") # RCN values per RCN cell ID
   input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/d per climate cell ID
   input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
-  input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
+  input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gauging station and RCN cell IDs
   input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
   input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
   # Simulation period
