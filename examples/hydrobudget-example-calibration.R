@@ -94,6 +94,7 @@ results_ <- caRamel(
   nvar = nvar,
   minmax =  minmax,
   bounds = bounds,
+  sensitivity = TRUE,
   func = hydrobudget_eval,
   popsize = 50,
   archsize = 100,
