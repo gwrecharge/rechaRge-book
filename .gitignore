@@ -6,3 +6,4 @@ _bookdown_files
 rsconnect
 rechaRge-book.Rmd
 rechaRge-book_*
+*.rds

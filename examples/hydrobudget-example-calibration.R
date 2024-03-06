@@ -108,6 +108,9 @@ results_ <- caRamel(
 # Results
 #
 
+results_
+# saveRDS(results_, "results.rds")
+
 # Merging simulation outputs with front objectives, to get corresponding parameters
 output_front <- data.table::data.table(cbind(results_$parameters, results_$objectives))
 colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
