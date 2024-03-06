@@ -1,10 +1,10 @@
 # 1-Install the package
 
 # Using remotes
-remotes::install_github("gwrecharge/rechaRge", ref = "dev")
+remotes::install_github("gwrecharge/rechaRge", ref = "main")
 
 # OR using pak
-pak::pkg_install("gwrecharge/rechaRge@dev")
+pak::pkg_install("gwrecharge/rechaRge@main")
 
 # Load the package
 library(rechaRge)
