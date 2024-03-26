@@ -50,7 +50,7 @@ HB$alpha_lyne_hollick_columns$station_id <- "station"
 simul_period <- c(2010, 2017)
 
 ## 2.5-Parallel computing option
-# nb_core <- 6 # if nothing is set, by default it will be all the computer core - 1
+nb_core <- 10
 
 # 3-Simulation with the HydroBudget model
 water_budget <- rechaRge::compute_recharge(
@@ -58,8 +58,8 @@ water_budget <- rechaRge::compute_recharge(
   rcn = input_rcn,
   climate = input_climate,
   rcn_climate = input_rcn_climate,
-  period = simul_period
-  # nb_core = nb_core
+  period = simul_period,
+  nb_core = nb_core
 )
 head(water_budget)
 

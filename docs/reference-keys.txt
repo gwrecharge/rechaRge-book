@@ -1,0 +1,15 @@
+fig:nice-fig
+tab:nice-tab
+prerequisites
+intro
+literature
+methods
+math-example
+example
+hydrobudget-model
+input-data-and-parameters
+simulation
+quality-assessment
+results-handling
+data-visualization
+final-words
