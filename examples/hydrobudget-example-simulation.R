@@ -50,16 +50,18 @@ HB$alpha_lyne_hollick_columns$station_id <- "station"
 simul_period <- c(2010, 2017)
 
 ## 2.5-Parallel computing option
-nb_core <- 10
+workers <- 2
 
 # 3-Simulation with the HydroBudget model
+with_verbose()
+with_progress()
 water_budget <- rechaRge::compute_recharge(
   HB,
   rcn = input_rcn,
   climate = input_climate,
   rcn_climate = input_rcn_climate,
   period = simul_period,
-  nb_core = nb_core
+  workers = workers
 )
 head(water_budget)
 

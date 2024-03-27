@@ -66,11 +66,11 @@ hydrobudget_eval <- function(i) {
     climate = input_climate,
     rcn_climate = input_rcn_climate,
     period = simul_period,
-    nb_core = 1
+    workers = 1
   )
 
   # Evaluate simulation quality
-  result <- rechaRge::compute_simulation_quality_assessment(
+  result <- rechaRge::evaluate_simulation_quality(
     HB,
     water_budget = water_budget,
     rcn_gauging = input_rcn_gauging,
@@ -86,7 +86,7 @@ hydrobudget_eval <- function(i) {
 }
 
 #
-# Simulations
+# Calibration with sensitivity
 #
 
 results_ <- caRamel(
@@ -96,9 +96,9 @@ results_ <- caRamel(
   bounds = bounds,
   sensitivity = TRUE,
   func = hydrobudget_eval,
-  popsize = 50,
+  popsize = 10,
   archsize = 100,
-  maxrun = 200,
+  maxrun = 10,
   prec = matrix(0.01, nrow = 1, ncol = nobj),
   carallel = 1,
   numcores = 2

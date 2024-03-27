@@ -99,7 +99,7 @@ knitr::kable(head(water_budget))
 Process the river flow observations and assess simulation quality:
 
 ```{r, message=FALSE}
-result <- rechaRge::compute_simulation_quality_assessment(
+result <- rechaRge::evaluate_simulation_quality(
   HB,
   water_budget = water_budget,
   rcn_gauging = input_rcn_gauging,
