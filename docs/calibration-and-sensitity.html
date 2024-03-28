@@ -182,8 +182,13 @@ div.csl-indent {
 <li class="chapter" data-level="3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html"><i class="fa fa-check"></i><b>3</b> Calibration and Sensitity</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#quality-assessment"><i class="fa fa-check"></i><b>3.1</b> Quality assessment</a></li>
-<li class="chapter" data-level="3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-caramel"><i class="fa fa-check"></i><b>3.2</b> Using caRamel</a></li>
-<li class="chapter" data-level="3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-sensitivity"><i class="fa fa-check"></i><b>3.3</b> Using sensitivity</a></li>
+<li class="chapter" data-level="3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-sensitivity"><i class="fa fa-check"></i><b>3.2</b> Using sensitivity</a></li>
+<li class="chapter" data-level="3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-caramel"><i class="fa fa-check"></i><b>3.3</b> Using caRamel</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#define-objective-function"><i class="fa fa-check"></i><b>3.3.1</b> Define objective function</a></li>
+<li class="chapter" data-level="3.3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#run-calibration"><i class="fa fa-check"></i><b>3.3.2</b> Run calibration</a></li>
+<li class="chapter" data-level="3.3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#analyse-calibration-results"><i class="fa fa-check"></i><b>3.3.3</b> Analyse calibration results</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="extensibility.html"><a href="extensibility.html"><i class="fa fa-check"></i><b>4</b> Extensibility</a>
 <ul>
@@ -246,10 +251,16 @@ div.csl-indent {
 $KGE_qbase_cal_mean
 [1] 0.7203224</code></pre>
 </div>
-<div id="using-caramel" class="section level2 hasAnchor" number="3.2">
-<h2><span class="header-section-number">3.2</span> Using caRamel<a href="calibration-and-sensitity.html#using-caramel" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="using-sensitivity" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Using sensitivity<a href="calibration-and-sensitity.html#using-sensitivity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <a href="https://cran.r-project.org/package=sensitivity">sensitivity</a> R package can perform various sensitivity analysis.</p>
+</div>
+<div id="using-caramel" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Using caRamel<a href="calibration-and-sensitity.html#using-caramel" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <a href="https://cran.r-project.org/package=caRamel">caRamel</a> R package can perform both calibration and sensitivity analysis.</p>
-<p>We will start by defining a simulation and quality evaluation function: the returned values will be used by <code>caRamel</code> to measure the quality of the injected parameters.</p>
+<div id="define-objective-function" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Define objective function<a href="calibration-and-sensitity.html#define-objective-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We will start by defining the objective function to optimize: this function will run a simulation and quality evaluation and its returned values will be used by <code>caRamel</code> to measure the quality of the injected parameters.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="calibration-and-sensitity.html#cb22-1" tabindex="-1"></a><span class="fu">library</span>(rechaRge)</span>
 <span id="cb22-2"><a href="calibration-and-sensitity.html#cb22-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
 <span id="cb22-3"><a href="calibration-and-sensitity.html#cb22-3" tabindex="-1"></a></span>
@@ -330,6 +341,9 @@ $KGE_qbase_cal_mean
 <span id="cb22-78"><a href="calibration-and-sensitity.html#cb22-78" tabindex="-1"></a></span>
 <span id="cb22-79"><a href="calibration-and-sensitity.html#cb22-79" tabindex="-1"></a>  <span class="fu">return</span>(hydrobudget_eval)</span>
 <span id="cb22-80"><a href="calibration-and-sensitity.html#cb22-80" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="run-calibration" class="section level3 hasAnchor" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Run calibration<a href="calibration-and-sensitity.html#run-calibration" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Then perform calibration with sensitivity:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="calibration-and-sensitity.html#cb23-1" tabindex="-1"></a><span class="fu">library</span>(caRamel)</span>
 <span id="cb23-2"><a href="calibration-and-sensitity.html#cb23-2" tabindex="-1"></a></span>
@@ -339,7 +353,7 @@ $KGE_qbase_cal_mean
 <span id="cb23-6"><a href="calibration-and-sensitity.html#cb23-6" tabindex="-1"></a>nvar <span class="ot">&lt;-</span> <span class="dv">8</span></span>
 <span id="cb23-7"><a href="calibration-and-sensitity.html#cb23-7" tabindex="-1"></a><span class="co"># All the objectives are to be maximized</span></span>
 <span id="cb23-8"><a href="calibration-and-sensitity.html#cb23-8" tabindex="-1"></a>minmax <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>)</span>
-<span id="cb23-9"><a href="calibration-and-sensitity.html#cb23-9" tabindex="-1"></a><span class="co"># Range of the parameters</span></span>
+<span id="cb23-9"><a href="calibration-and-sensitity.html#cb23-9" tabindex="-1"></a><span class="co"># Ranges of the parameters</span></span>
 <span id="cb23-10"><a href="calibration-and-sensitity.html#cb23-10" tabindex="-1"></a>bounds <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> nvar, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
 <span id="cb23-11"><a href="calibration-and-sensitity.html#cb23-11" tabindex="-1"></a>bounds[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">5</span>, <span class="fl">3.05</span>, <span class="fl">0.5</span>, <span class="dv">160</span>, <span class="fl">0.01</span>)</span>
 <span id="cb23-12"><a href="calibration-and-sensitity.html#cb23-12" tabindex="-1"></a>bounds[, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="fl">6.5</span>, <span class="sc">-</span><span class="dv">12</span>, <span class="dv">30</span>, <span class="fl">4.8</span>, <span class="fl">0.6</span>, <span class="dv">720</span>, <span class="fl">0.05</span>)</span>
@@ -349,15 +363,18 @@ $KGE_qbase_cal_mean
 <span id="cb23-16"><a href="calibration-and-sensitity.html#cb23-16" tabindex="-1"></a>  <span class="at">nvar =</span> nvar,</span>
 <span id="cb23-17"><a href="calibration-and-sensitity.html#cb23-17" tabindex="-1"></a>  <span class="at">minmax =</span>  minmax,</span>
 <span id="cb23-18"><a href="calibration-and-sensitity.html#cb23-18" tabindex="-1"></a>  <span class="at">bounds =</span> bounds,</span>
-<span id="cb23-19"><a href="calibration-and-sensitity.html#cb23-19" tabindex="-1"></a>  <span class="at">sensitivity =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb23-20"><a href="calibration-and-sensitity.html#cb23-20" tabindex="-1"></a>  <span class="at">func =</span> <span class="fu">make_hydrobudget_eval</span>(),</span>
-<span id="cb23-21"><a href="calibration-and-sensitity.html#cb23-21" tabindex="-1"></a>  <span class="at">popsize =</span> <span class="dv">10</span>,</span>
-<span id="cb23-22"><a href="calibration-and-sensitity.html#cb23-22" tabindex="-1"></a>  <span class="at">archsize =</span> <span class="dv">100</span>,</span>
-<span id="cb23-23"><a href="calibration-and-sensitity.html#cb23-23" tabindex="-1"></a>  <span class="at">maxrun =</span> <span class="dv">10</span>,</span>
-<span id="cb23-24"><a href="calibration-and-sensitity.html#cb23-24" tabindex="-1"></a>  <span class="at">prec =</span> <span class="fu">matrix</span>(<span class="fl">0.01</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> nobj),</span>
-<span id="cb23-25"><a href="calibration-and-sensitity.html#cb23-25" tabindex="-1"></a>  <span class="at">carallel =</span> <span class="dv">1</span>, <span class="co"># do parallel</span></span>
-<span id="cb23-26"><a href="calibration-and-sensitity.html#cb23-26" tabindex="-1"></a>  <span class="at">numcores =</span> <span class="dv">2</span>  <span class="co"># on 2 cores</span></span>
+<span id="cb23-19"><a href="calibration-and-sensitity.html#cb23-19" tabindex="-1"></a>  <span class="at">func =</span> <span class="fu">make_hydrobudget_eval</span>(),</span>
+<span id="cb23-20"><a href="calibration-and-sensitity.html#cb23-20" tabindex="-1"></a>  <span class="at">prec =</span> <span class="fu">matrix</span>(<span class="fl">0.01</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> nobj),</span>
+<span id="cb23-21"><a href="calibration-and-sensitity.html#cb23-21" tabindex="-1"></a>  <span class="at">sensitivity =</span> <span class="cn">FALSE</span>, <span class="co"># you can include sensitivity analysis</span></span>
+<span id="cb23-22"><a href="calibration-and-sensitity.html#cb23-22" tabindex="-1"></a>  <span class="at">archsize =</span> <span class="dv">100</span>,<span class="co"># adjust to relevant value</span></span>
+<span id="cb23-23"><a href="calibration-and-sensitity.html#cb23-23" tabindex="-1"></a>  <span class="at">popsize =</span> <span class="dv">10</span>,  <span class="co"># adjust to relevant value</span></span>
+<span id="cb23-24"><a href="calibration-and-sensitity.html#cb23-24" tabindex="-1"></a>  <span class="at">maxrun =</span> <span class="dv">10</span>,   <span class="co"># adjust to relevant value</span></span>
+<span id="cb23-25"><a href="calibration-and-sensitity.html#cb23-25" tabindex="-1"></a>  <span class="at">carallel =</span> <span class="dv">1</span>, <span class="co"># do parallel ...</span></span>
+<span id="cb23-26"><a href="calibration-and-sensitity.html#cb23-26" tabindex="-1"></a>  <span class="at">numcores =</span> <span class="dv">2</span>  <span class="co"># ... on 2 cores</span></span>
 <span id="cb23-27"><a href="calibration-and-sensitity.html#cb23-27" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="analyse-calibration-results" class="section level3 hasAnchor" number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> Analyse calibration results<a href="calibration-and-sensitity.html#analyse-calibration-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="calibration-and-sensitity.html#cb24-1" tabindex="-1"></a>output_front <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">data.table</span>(<span class="fu">cbind</span>(calibration_results<span class="sc">$</span>parameters, calibration_results<span class="sc">$</span>objectives))</span>
 <span id="cb24-2"><a href="calibration-and-sensitity.html#cb24-2" tabindex="-1"></a><span class="fu">colnames</span>(output_front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;T_m&quot;</span>, <span class="st">&quot;C_m&quot;</span>, <span class="st">&quot;TT_F&quot;</span>, <span class="st">&quot;F_T&quot;</span>, <span class="st">&quot;t_API&quot;</span>, <span class="st">&quot;f_runoff&quot;</span>, <span class="st">&quot;sw_m&quot;</span>, <span class="st">&quot;f_inf&quot;</span>, <span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span></code></pre></div>
@@ -435,11 +452,8 @@ $KGE_qbase_cal_mean
 <span id="cb26-13"><a href="calibration-and-sensitity.html#cb26-13" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Dataset&quot;</span>) <span class="sc">+</span></span>
 <span id="cb26-14"><a href="calibration-and-sensitity.html#cb26-14" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
 <p><img src="fig/unnamed-chunk-26-1.png" width="672" /></p>
-</div>
-<div id="using-sensitivity" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> Using sensitivity<a href="calibration-and-sensitity.html#using-sensitivity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The <a href="https://cran.r-project.org/package=sensitivity">sensitivity</a> R package can perform various sensitivity analysis.</p>
 
+</div>
 </div>
 </div>
             </section>

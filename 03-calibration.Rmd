@@ -44,11 +44,19 @@ list(
 ```
 
 
+## Using sensitivity
+
+The [sensitivity](https://cran.r-project.org/package=sensitivity) R package can perform various sensitivity analysis.
+
+
+
 ## Using caRamel
 
 The [caRamel](https://cran.r-project.org/package=caRamel) R package can perform both calibration and sensitivity analysis.
 
-We will start by defining a simulation and quality evaluation function: the returned values will be used by `caRamel` to measure the quality of the injected parameters.
+### Define objective function
+
+We will start by defining the objective function to optimize: this function will run a simulation and quality evaluation and its returned values will be used by `caRamel` to measure the quality of the injected parameters.
 
 ```{r}
 library(rechaRge)
@@ -133,6 +141,8 @@ make_hydrobudget_eval <- function() {
 }
 ```
 
+### Run calibration
+
 Then perform calibration with sensitivity:
 
 ```{r, message=FALSE, results='hide', cache=TRUE, fig.show='hide'}
@@ -144,7 +154,7 @@ nobj <- 2
 nvar <- 8
 # All the objectives are to be maximized
 minmax <- c(TRUE, TRUE)
-# Range of the parameters
+# Ranges of the parameters
 bounds <- matrix(nrow = nvar, ncol = 2)
 bounds[, 1] <- c(1, 4, -20, 5, 3.05, 0.5, 160, 0.01)
 bounds[, 2] <- c(2.5, 6.5, -12, 30, 4.8, 0.6, 720, 0.05)
@@ -154,16 +164,17 @@ calibration_results <- caRamel(
   nvar = nvar,
   minmax =  minmax,
   bounds = bounds,
-  sensitivity = TRUE,
   func = make_hydrobudget_eval(),
-  popsize = 10,
-  archsize = 100,
-  maxrun = 10,
   prec = matrix(0.01, nrow = 1, ncol = nobj),
-  carallel = 1, # do parallel
-  numcores = 2  # on 2 cores
+  sensitivity = FALSE, # you can include sensitivity analysis
+  archsize = 100,# adjust to relevant value
+  popsize = 10,  # adjust to relevant value
+  maxrun = 10,   # adjust to relevant value
+  carallel = 1, # do parallel ...
+  numcores = 2  # ... on 2 cores
 )
 ```
+### Analyse calibration results
 
 Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters:
 
@@ -202,7 +213,3 @@ ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
   theme_minimal()
 ```
 
-
-## Using sensitivity
-
-The [sensitivity](https://cran.r-project.org/package=sensitivity) R package can perform various sensitivity analysis.

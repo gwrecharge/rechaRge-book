@@ -10,8 +10,11 @@ save-results-in-files
 data-visualization
 calibration-and-sensitity
 quality-assessment
-using-caramel
 using-sensitivity
+using-caramel
+define-objective-function
+run-calibration
+analyse-calibration-results
 extensibility
 generic-functions
 other-languages
