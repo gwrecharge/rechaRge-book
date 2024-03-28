@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Simulation | rechaRge: the HydroBudget model</title>
+  <meta name="description" content="The book presents the rechaRge package, and how it is used with the HydroBudget model." />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Simulation | rechaRge: the HydroBudget model" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="The book presents the rechaRge package, and how it is used with the HydroBudget model." />
+  <meta name="github-repo" content="gwrecharge/rechaRge-book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Simulation | rechaRge: the HydroBudget model" />
+  
+  <meta name="twitter:description" content="The book presents the rechaRge package, and how it is used with the HydroBudget model." />
+  
+
+<meta name="author" content="Emmanuel Dubois, Yannick Marcon" />
+
+
+<meta name="date" content="2024-03-28" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="intro.html"/>
+<link rel="next" href="calibration-and-sensitity.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">rechaRge: the HydroBudget model</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#installation"><i class="fa fa-check"></i><b>1.1</b> Installation</a></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#usage"><i class="fa fa-check"></i><b>1.2</b> Usage</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="simulation.html"><a href="simulation.html"><i class="fa fa-check"></i><b>2</b> Simulation</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="simulation.html"><a href="simulation.html#hydrobudget-model"><i class="fa fa-check"></i><b>2.1</b> HydroBudget Model</a></li>
+<li class="chapter" data-level="2.2" data-path="simulation.html"><a href="simulation.html#input-data-and-parameters"><i class="fa fa-check"></i><b>2.2</b> Input data and parameters</a></li>
+<li class="chapter" data-level="2.3" data-path="simulation.html"><a href="simulation.html#simulation-1"><i class="fa fa-check"></i><b>2.3</b> Simulation</a></li>
+<li class="chapter" data-level="2.4" data-path="simulation.html"><a href="simulation.html#results"><i class="fa fa-check"></i><b>2.4</b> Results</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="simulation.html"><a href="simulation.html#save-results-in-files"><i class="fa fa-check"></i><b>2.4.1</b> Save results in files</a></li>
+<li class="chapter" data-level="2.4.2" data-path="simulation.html"><a href="simulation.html#data-visualization"><i class="fa fa-check"></i><b>2.4.2</b> Data visualization</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html"><i class="fa fa-check"></i><b>3</b> Calibration and Sensitity</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#quality-assessment"><i class="fa fa-check"></i><b>3.1</b> Quality assessment</a></li>
+<li class="chapter" data-level="3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-caramel"><i class="fa fa-check"></i><b>3.2</b> Using caRamel</a></li>
+<li class="chapter" data-level="3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-sensitivity"><i class="fa fa-check"></i><b>3.3</b> Using sensitivity</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="extensibility.html"><a href="extensibility.html"><i class="fa fa-check"></i><b>4</b> Extensibility</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="extensibility.html"><a href="extensibility.html#generic-functions"><i class="fa fa-check"></i><b>4.1</b> Generic functions</a></li>
+<li class="chapter" data-level="4.2" data-path="extensibility.html"><a href="extensibility.html#other-languages"><i class="fa fa-check"></i><b>4.2</b> Other languages</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="about-r.html"><a href="about-r.html"><i class="fa fa-check"></i><b>5</b> About R</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">rechaRge: the HydroBudget model</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="simulation" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Simulation<a href="simulation.html#simulation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="hydrobudget-model" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> HydroBudget Model<a href="simulation.html#hydrobudget-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>HydroBudget</strong> was developed as an accessible and computationally affordable model to simulate GWR over large areas (thousands of km2) and for long time periods (decades), in cold and humid climates. The model uses commonly available meteorological data (daily precipitation and temperature, spatialized if possible) and spatially distributed data (pedology, land cover, and slopes). It is calibrated with river flows and baseflows estimated with recursive filters. The model needs reasonable computational capacity to reach relatively short computational times. It is based on simplified representations of hydrological processes and is driven by eight parameters that need to be calibrated.</p>
+<p><strong>HydroBudget</strong> uses a degree-day snow model for snow accumulation and snowmelt, and a conceptual lumped reservoir to compute the soil water budget on a daily time step. For each grid cell and each time step, the calculation distributes precipitation as runoff (R), evapotranspiration (ET), and infiltration that can reach the saturated zone if geological conditions below the soil allow deep percolation. HB thus produces estimates of potential GWR. The daily results are compiled at a monthly time step.</p>
+</div>
+<div id="input-data-and-parameters" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Input data and parameters<a href="simulation.html#input-data-and-parameters" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Start with loading the <code>rechaRge</code> library.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="simulation.html#cb3-1" tabindex="-1"></a><span class="fu">library</span>(rechaRge)</span></code></pre></div>
+<p>Then load the input data for the simulation. In that case, the example datasets are available for download. The data input handler is based on <code>data.table::fread</code> function, then you can provide an URL like in the example or a local file path.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="simulation.html#cb4-1" tabindex="-1"></a>base_url <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/&quot;</span></span>
+<span id="cb4-2"><a href="simulation.html#cb4-2" tabindex="-1"></a>input_rcn <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn.csv.gz&quot;</span>) <span class="co"># RCN values per RCN cell ID</span></span>
+<span id="cb4-3"><a href="simulation.html#cb4-3" tabindex="-1"></a>input_climate <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_url, <span class="st">&quot;climate.csv.gz&quot;</span>) <span class="co"># precipitation total in mm/d per climate cell ID</span></span>
+<span id="cb4-4"><a href="simulation.html#cb4-4" tabindex="-1"></a>input_rcn_climate <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_climate.csv.gz&quot;</span>) <span class="co"># relation between climate and RCN cell IDs</span></span></code></pre></div>
+<p>Set the <strong>HydroBudget</strong> model with the parameters values (if you do not know which parameters to set, see the Calibration section):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="simulation.html#cb5-1" tabindex="-1"></a>HB <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">new_hydrobugdet</span>(</span>
+<span id="cb5-2"><a href="simulation.html#cb5-2" tabindex="-1"></a>  <span class="at">T_m =</span> <span class="fl">2.1</span>, <span class="co"># melting temperature (°C)</span></span>
+<span id="cb5-3"><a href="simulation.html#cb5-3" tabindex="-1"></a>  <span class="at">C_m =</span> <span class="fl">6.2</span>, <span class="co"># melting coefficient (mm/°C/d)</span></span>
+<span id="cb5-4"><a href="simulation.html#cb5-4" tabindex="-1"></a>  <span class="at">TT_F =</span> <span class="sc">-</span><span class="fl">17.6</span>, <span class="co"># Threshold temperature for soil frost (°C)</span></span>
+<span id="cb5-5"><a href="simulation.html#cb5-5" tabindex="-1"></a>  <span class="at">F_T =</span> <span class="fl">16.4</span>, <span class="co"># Freezing time (d)</span></span>
+<span id="cb5-6"><a href="simulation.html#cb5-6" tabindex="-1"></a>  <span class="at">t_API =</span> <span class="fl">3.9</span>, <span class="co"># Antecedent precipitation index time (d)</span></span>
+<span id="cb5-7"><a href="simulation.html#cb5-7" tabindex="-1"></a>  <span class="at">f_runoff =</span> <span class="fl">0.63</span>, <span class="co"># Runoff factor (-)</span></span>
+<span id="cb5-8"><a href="simulation.html#cb5-8" tabindex="-1"></a>  <span class="at">sw_m =</span> <span class="dv">431</span>, <span class="co"># Maximum soil water content (mm)</span></span>
+<span id="cb5-9"><a href="simulation.html#cb5-9" tabindex="-1"></a>  <span class="at">f_inf =</span> <span class="fl">0.07</span> <span class="co"># infiltration factor (-)</span></span>
+<span id="cb5-10"><a href="simulation.html#cb5-10" tabindex="-1"></a>)</span></code></pre></div>
+<p>As the <strong>HydroBudget</strong> model expects some data structure (expected data, with predefined column names), set the column names mappings matching the input datasets:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="simulation.html#cb6-1" tabindex="-1"></a>HB<span class="sc">$</span>rcn_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-2"><a href="simulation.html#cb6-2" tabindex="-1"></a>  <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
+<span id="cb6-3"><a href="simulation.html#cb6-3" tabindex="-1"></a>  <span class="at">RCNII =</span> <span class="st">&quot;RCNII&quot;</span>,</span>
+<span id="cb6-4"><a href="simulation.html#cb6-4" tabindex="-1"></a>  <span class="at">lon =</span> <span class="st">&quot;X_L93&quot;</span>,</span>
+<span id="cb6-5"><a href="simulation.html#cb6-5" tabindex="-1"></a>  <span class="at">lat =</span> <span class="st">&quot;Y_L93&quot;</span></span>
+<span id="cb6-6"><a href="simulation.html#cb6-6" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="simulation.html#cb6-7" tabindex="-1"></a>HB<span class="sc">$</span>climate_columns<span class="sc">$</span>climate_id <span class="ot">&lt;-</span> <span class="st">&quot;climate_cell&quot;</span></span>
+<span id="cb6-8"><a href="simulation.html#cb6-8" tabindex="-1"></a>HB<span class="sc">$</span>rcn_climate_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-9"><a href="simulation.html#cb6-9" tabindex="-1"></a>  <span class="at">climate_id =</span> <span class="st">&quot;climate_cell&quot;</span>,</span>
+<span id="cb6-10"><a href="simulation.html#cb6-10" tabindex="-1"></a>  <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span></span>
+<span id="cb6-11"><a href="simulation.html#cb6-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>Then define the simulation period (if not, the period will be discovered from the input data):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="simulation.html#cb7-1" tabindex="-1"></a>simul_period <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2017</span>)</span></code></pre></div>
+</div>
+<div id="simulation-1" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Simulation<a href="simulation.html#simulation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Once the <strong>HydroBudget</strong> object is ready, compute the water budget using the model implementation:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="simulation.html#cb8-1" tabindex="-1"></a>water_budget <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">compute_recharge</span>(</span>
+<span id="cb8-2"><a href="simulation.html#cb8-2" tabindex="-1"></a>  HB,</span>
+<span id="cb8-3"><a href="simulation.html#cb8-3" tabindex="-1"></a>  <span class="at">rcn =</span> input_rcn,</span>
+<span id="cb8-4"><a href="simulation.html#cb8-4" tabindex="-1"></a>  <span class="at">climate =</span> input_climate,</span>
+<span id="cb8-5"><a href="simulation.html#cb8-5" tabindex="-1"></a>  <span class="at">rcn_climate =</span> input_rcn_climate,</span>
+<span id="cb8-6"><a href="simulation.html#cb8-6" tabindex="-1"></a>  <span class="at">period =</span> simul_period</span>
+<span id="cb8-7"><a href="simulation.html#cb8-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>The water budget data set is per year-month in each RCN cell:</p>
+<ul>
+<li><code>vi</code>, the vertical inflow</li>
+<li><code>t_mean</code>, the mean temperature</li>
+<li><code>runoff</code>, the runoff</li>
+<li><code>pet</code>, the potential evapotranspiration</li>
+<li><code>aet</code>, the actual evapotranspiration</li>
+<li><code>gwr</code>, the groundwater recharge</li>
+<li><code>runoff_2</code>, the excess runoff</li>
+</ul>
+<p>The head of this data set is:</p>
+<table style="width:100%;">
+<colgroup>
+<col width="6%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="6%" />
+<col width="6%" />
+<col width="11%" />
+<col width="20%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">year</th>
+<th align="right">month</th>
+<th align="right">vi</th>
+<th align="right">t_mean</th>
+<th align="right">runoff</th>
+<th align="right">pet</th>
+<th align="right">aet</th>
+<th align="right">gwr</th>
+<th align="right">runoff_2</th>
+<th align="right">delta_reservoir</th>
+<th align="right">rcn_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2010</td>
+<td align="right">1</td>
+<td align="right">28.2</td>
+<td align="right">-7.3</td>
+<td align="right">21.5</td>
+<td align="right">1.6</td>
+<td align="right">1.6</td>
+<td align="right">10.2</td>
+<td align="right">0</td>
+<td align="right">-5.1</td>
+<td align="right">62097</td>
+</tr>
+<tr class="even">
+<td align="right">2010</td>
+<td align="right">2</td>
+<td align="right">27.9</td>
+<td align="right">-5.7</td>
+<td align="right">7.9</td>
+<td align="right">4.6</td>
+<td align="right">4.6</td>
+<td align="right">8.8</td>
+<td align="right">0</td>
+<td align="right">6.6</td>
+<td align="right">62097</td>
+</tr>
+<tr class="odd">
+<td align="right">2010</td>
+<td align="right">3</td>
+<td align="right">83.0</td>
+<td align="right">1.0</td>
+<td align="right">30.8</td>
+<td align="right">19.5</td>
+<td align="right">19.5</td>
+<td align="right">16.1</td>
+<td align="right">0</td>
+<td align="right">16.6</td>
+<td align="right">62097</td>
+</tr>
+<tr class="even">
+<td align="right">2010</td>
+<td align="right">4</td>
+<td align="right">68.2</td>
+<td align="right">7.7</td>
+<td align="right">24.9</td>
+<td align="right">51.5</td>
+<td align="right">51.5</td>
+<td align="right">15.1</td>
+<td align="right">0</td>
+<td align="right">-23.3</td>
+<td align="right">62097</td>
+</tr>
+<tr class="odd">
+<td align="right">2010</td>
+<td align="right">5</td>
+<td align="right">46.9</td>
+<td align="right">13.8</td>
+<td align="right">3.8</td>
+<td align="right">94.7</td>
+<td align="right">73.8</td>
+<td align="right">4.4</td>
+<td align="right">0</td>
+<td align="right">-35.2</td>
+<td align="right">62097</td>
+</tr>
+<tr class="even">
+<td align="right">2010</td>
+<td align="right">6</td>
+<td align="right">107.9</td>
+<td align="right">17.0</td>
+<td align="right">33.3</td>
+<td align="right">114.7</td>
+<td align="right">81.1</td>
+<td align="right">0.2</td>
+<td align="right">0</td>
+<td align="right">-6.7</td>
+<td align="right">62097</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="results" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Results<a href="simulation.html#results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The simulation results can be reworked, summarized and visualized.</p>
+<div id="save-results-in-files" class="section level3 hasAnchor" number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Save results in files<a href="simulation.html#save-results-in-files" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Start with defining the output folder:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="simulation.html#cb9-1" tabindex="-1"></a>sim_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="fu">paste0</span>(<span class="st">&quot;simulation_HydroBudget_&quot;</span>, <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">&quot;%Y%m%dT%H_%M&quot;</span>)))</span></code></pre></div>
+<p>Then write the resulting water budget in different formats in this output folder:</p>
+<ul>
+<li>CSV</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="simulation.html#cb10-1" tabindex="-1"></a><span class="co"># CSV</span></span>
+<span id="cb10-2"><a href="simulation.html#cb10-2" tabindex="-1"></a>rechaRge<span class="sc">::</span><span class="fu">write_recharge_results</span>(HB, water_budget, <span class="at">output_dir =</span> sim_dir)</span></code></pre></div>
+<ul>
+<li>NetCDF</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="simulation.html#cb11-1" tabindex="-1"></a><span class="co"># NetCDF</span></span>
+<span id="cb11-2"><a href="simulation.html#cb11-2" tabindex="-1"></a>rechaRge<span class="sc">::</span><span class="fu">write_recharge_results</span>(HB, water_budget, <span class="at">output_dir =</span> sim_dir, <span class="at">format =</span> <span class="st">&quot;nc&quot;</span>, <span class="at">input_rcn =</span> input_rcn, <span class="at">names =</span> <span class="fu">list</span>(</span>
+<span id="cb11-3"><a href="simulation.html#cb11-3" tabindex="-1"></a>  <span class="st">&quot;lon&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb11-4"><a href="simulation.html#cb11-4" tabindex="-1"></a>    <span class="at">longname =</span> <span class="st">&quot;Qc lambert NAD83 epsg32198 Est&quot;</span>,</span>
+<span id="cb11-5"><a href="simulation.html#cb11-5" tabindex="-1"></a>    <span class="at">unit =</span> <span class="st">&quot;m&quot;</span></span>
+<span id="cb11-6"><a href="simulation.html#cb11-6" tabindex="-1"></a>  ),</span>
+<span id="cb11-7"><a href="simulation.html#cb11-7" tabindex="-1"></a>  <span class="st">&quot;lat&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb11-8"><a href="simulation.html#cb11-8" tabindex="-1"></a>    <span class="at">longname =</span> <span class="st">&quot;Qc lambert NAD83 epsg32198 North&quot;</span>,</span>
+<span id="cb11-9"><a href="simulation.html#cb11-9" tabindex="-1"></a>    <span class="at">unit =</span> <span class="st">&quot;m&quot;</span></span>
+<span id="cb11-10"><a href="simulation.html#cb11-10" tabindex="-1"></a>  )</span>
+<span id="cb11-11"><a href="simulation.html#cb11-11" tabindex="-1"></a>))</span></code></pre></div>
+<ul>
+<li>Rasters</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="simulation.html#cb12-1" tabindex="-1"></a><span class="co"># Rasters</span></span>
+<span id="cb12-2"><a href="simulation.html#cb12-2" tabindex="-1"></a>rechaRge<span class="sc">::</span><span class="fu">write_recharge_rasters</span>(</span>
+<span id="cb12-3"><a href="simulation.html#cb12-3" tabindex="-1"></a>  HB,</span>
+<span id="cb12-4"><a href="simulation.html#cb12-4" tabindex="-1"></a>  <span class="at">water_budget =</span> water_budget,</span>
+<span id="cb12-5"><a href="simulation.html#cb12-5" tabindex="-1"></a>  <span class="at">input_rcn =</span> input_rcn,</span>
+<span id="cb12-6"><a href="simulation.html#cb12-6" tabindex="-1"></a>  <span class="at">crs =</span> <span class="st">&quot;+proj=lcc +lat_1=60 +lat_2=46 +lat_0=44 +lon_0=-68.5 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs&quot;</span>,</span>
+<span id="cb12-7"><a href="simulation.html#cb12-7" tabindex="-1"></a>  <span class="at">output_dir =</span> sim_dir</span>
+<span id="cb12-8"><a href="simulation.html#cb12-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>The output folder content should look like this:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="simulation.html#cb13-1" tabindex="-1"></a><span class="co"># List simulation output files</span></span>
+<span id="cb13-2"><a href="simulation.html#cb13-2" tabindex="-1"></a><span class="fu">list.files</span>(sim_dir)</span></code></pre></div>
+<pre><code>[1] &quot;bilan_spat_month.csv&quot;         &quot;bilan_unspat_month.csv&quot;      
+[3] &quot;interannual_aet_NAD83.tif&quot;    &quot;interannual_gwr_NAD83.tif&quot;   
+[5] &quot;interannual_runoff_NAD83.tif&quot; &quot;water_budget.nc&quot;             </code></pre>
+</div>
+<div id="data-visualization" class="section level3 hasAnchor" number="2.4.2">
+<h3><span class="header-section-number">2.4.2</span> Data visualization<a href="simulation.html#data-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Visualize the saved NetCDF file:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="simulation.html#cb15-1" tabindex="-1"></a><span class="fu">library</span>(ncdf4)</span>
+<span id="cb15-2"><a href="simulation.html#cb15-2" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb15-3"><a href="simulation.html#cb15-3" tabindex="-1"></a><span class="fu">library</span>(viridisLite)</span>
+<span id="cb15-4"><a href="simulation.html#cb15-4" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="simulation.html#cb15-5" tabindex="-1"></a><span class="co"># Extract GWR data</span></span>
+<span id="cb15-6"><a href="simulation.html#cb15-6" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">nc_open</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;water_budget.nc&quot;</span>))</span>
+<span id="cb15-7"><a href="simulation.html#cb15-7" tabindex="-1"></a>gwr <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;gwr&quot;</span>)</span>
+<span id="cb15-8"><a href="simulation.html#cb15-8" tabindex="-1"></a>gwratt <span class="ot">&lt;-</span> <span class="fu">ncatt_get</span>(nc, <span class="st">&quot;gwr&quot;</span>)</span>
+<span id="cb15-9"><a href="simulation.html#cb15-9" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;lon&quot;</span>)</span>
+<span id="cb15-10"><a href="simulation.html#cb15-10" tabindex="-1"></a>lonatt <span class="ot">&lt;-</span> <span class="fu">ncatt_get</span>(nc, <span class="st">&quot;lon&quot;</span>)</span>
+<span id="cb15-11"><a href="simulation.html#cb15-11" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;lat&quot;</span>)</span>
+<span id="cb15-12"><a href="simulation.html#cb15-12" tabindex="-1"></a>latatt <span class="ot">&lt;-</span> <span class="fu">ncatt_get</span>(nc, <span class="st">&quot;lat&quot;</span>)</span>
+<span id="cb15-13"><a href="simulation.html#cb15-13" tabindex="-1"></a>time <span class="ot">&lt;-</span> <span class="fu">ncvar_get</span>(nc, <span class="st">&quot;time&quot;</span>)</span>
+<span id="cb15-14"><a href="simulation.html#cb15-14" tabindex="-1"></a><span class="fu">nc_close</span>(nc)</span>
+<span id="cb15-15"><a href="simulation.html#cb15-15" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="simulation.html#cb15-16" tabindex="-1"></a><span class="co"># Render the 18th month</span></span>
+<span id="cb15-17"><a href="simulation.html#cb15-17" tabindex="-1"></a>month <span class="ot">&lt;-</span> <span class="dv">18</span></span>
+<span id="cb15-18"><a href="simulation.html#cb15-18" tabindex="-1"></a>gwr1 <span class="ot">&lt;-</span> gwr[,,month]</span>
+<span id="cb15-19"><a href="simulation.html#cb15-19" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">lon=</span>lon, <span class="at">lat=</span>lat)</span>
+<span id="cb15-20"><a href="simulation.html#cb15-20" tabindex="-1"></a>title <span class="ot">&lt;-</span> <span class="fu">paste0</span>(gwratt<span class="sc">$</span>long_name, <span class="st">&quot; (&quot;</span>, gwratt<span class="sc">$</span>units, <span class="st">&quot;) &quot;</span>, <span class="st">&quot; #&quot;</span>, month)</span>
+<span id="cb15-21"><a href="simulation.html#cb15-21" tabindex="-1"></a>xlab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(latatt<span class="sc">$</span>long_name, <span class="st">&quot; (&quot;</span>, latatt<span class="sc">$</span>units, <span class="st">&quot;)&quot;</span>)</span>
+<span id="cb15-22"><a href="simulation.html#cb15-22" tabindex="-1"></a>ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(lonatt<span class="sc">$</span>long_name, <span class="st">&quot; (&quot;</span>, lonatt<span class="sc">$</span>units, <span class="st">&quot;)&quot;</span>)</span>
+<span id="cb15-23"><a href="simulation.html#cb15-23" tabindex="-1"></a><span class="fu">levelplot</span>(gwr1 <span class="sc">~</span> lon <span class="sc">*</span> lat, <span class="at">data=</span>grid, <span class="at">pretty=</span>T, <span class="at">col.regions=</span><span class="fu">inferno</span>(<span class="dv">100</span>),</span>
+<span id="cb15-24"><a href="simulation.html#cb15-24" tabindex="-1"></a>          <span class="at">main=</span>title, <span class="at">xlab=</span>xlab, <span class="at">ylab=</span>ylab)</span></code></pre></div>
+<p><img src="fig/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Visualize the saved raster files:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="simulation.html#cb16-1" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
+<span id="cb16-2"><a href="simulation.html#cb16-2" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb16-3"><a href="simulation.html#cb16-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb16-4"><a href="simulation.html#cb16-4" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb16-5"><a href="simulation.html#cb16-5" tabindex="-1"></a>subtitle <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(simul_period[<span class="dv">1</span>] <span class="sc">==</span> simul_period[<span class="dv">2</span>],</span>
+<span id="cb16-6"><a href="simulation.html#cb16-6" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;In &quot;</span>, simul_period[<span class="dv">1</span>]),</span>
+<span id="cb16-7"><a href="simulation.html#cb16-7" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;From &quot;</span>, simul_period[<span class="dv">1</span>], <span class="st">&quot; to &quot;</span>, simul_period[<span class="dv">2</span>])</span>
+<span id="cb16-8"><a href="simulation.html#cb16-8" tabindex="-1"></a>)</span>
+<span id="cb16-9"><a href="simulation.html#cb16-9" tabindex="-1"></a>runoff <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_runoff_NAD83.tif&quot;</span>))</span>
+<span id="cb16-10"><a href="simulation.html#cb16-10" tabindex="-1"></a>runoffplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-11"><a href="simulation.html#cb16-11" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> runoff) <span class="sc">+</span></span>
+<span id="cb16-12"><a href="simulation.html#cb16-12" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-13"><a href="simulation.html#cb16-13" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-14"><a href="simulation.html#cb16-14" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb16-15"><a href="simulation.html#cb16-15" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Runoff&quot;</span>,</span>
+<span id="cb16-16"><a href="simulation.html#cb16-16" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
+<span id="cb16-17"><a href="simulation.html#cb16-17" tabindex="-1"></a>  )</span>
+<span id="cb16-18"><a href="simulation.html#cb16-18" tabindex="-1"></a>aet <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_aet_NAD83.tif&quot;</span>))</span>
+<span id="cb16-19"><a href="simulation.html#cb16-19" tabindex="-1"></a>aetplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-20"><a href="simulation.html#cb16-20" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> aet) <span class="sc">+</span></span>
+<span id="cb16-21"><a href="simulation.html#cb16-21" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-22"><a href="simulation.html#cb16-22" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-23"><a href="simulation.html#cb16-23" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb16-24"><a href="simulation.html#cb16-24" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Actual Evapotranspiration&quot;</span>,</span>
+<span id="cb16-25"><a href="simulation.html#cb16-25" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
+<span id="cb16-26"><a href="simulation.html#cb16-26" tabindex="-1"></a>  )</span>
+<span id="cb16-27"><a href="simulation.html#cb16-27" tabindex="-1"></a>gwr <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">file.path</span>(sim_dir, <span class="st">&quot;interannual_gwr_NAD83.tif&quot;</span>))</span>
+<span id="cb16-28"><a href="simulation.html#cb16-28" tabindex="-1"></a>gwrplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-29"><a href="simulation.html#cb16-29" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> gwr) <span class="sc">+</span></span>
+<span id="cb16-30"><a href="simulation.html#cb16-30" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;inferno&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-31"><a href="simulation.html#cb16-31" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-32"><a href="simulation.html#cb16-32" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb16-33"><a href="simulation.html#cb16-33" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Groundwater Recharge&quot;</span>,</span>
+<span id="cb16-34"><a href="simulation.html#cb16-34" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
+<span id="cb16-35"><a href="simulation.html#cb16-35" tabindex="-1"></a>  )</span>
+<span id="cb16-36"><a href="simulation.html#cb16-36" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(runoffplot, aetplot, gwrplot)</span></code></pre></div>
+<p><img src="fig/unnamed-chunk-15-1.png" width="672" /></p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="intro.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="calibration-and-sensitity.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": "linkedin"
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/gwrecharge/rechaRge-book/edit/main/02-simulation.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["rechaRge-book.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

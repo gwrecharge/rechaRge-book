@@ -1,0 +1,53 @@
+# Calibration and Sensitity
+
+We will make use of `rechaRge` API to perform calibration and sensitivity analysis with different tools.
+
+## Quality assessment
+
+Following the previous example, we will need to load observations datasets:
+
+```{r}
+input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
+input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
+input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
+```
+
+And we also need in this case to update the settings of the **HydroBudget** model object, so that column names match with the expected ones:
+
+```{r}
+HB$rcn_gauging_columns <- list(
+  rcn_id = "cell_ID",
+  station_id = "gauging_stat"
+)
+HB$alpha_lyne_hollick_columns$station_id <- "station"
+```
+
+Then we can process the river flow observations and assess simulation quality:
+
+```{r, message=FALSE}
+quality <- rechaRge::evaluate_simulation_quality(
+  HB,
+  water_budget = water_budget,
+  rcn_gauging = input_rcn_gauging,
+  observed_flow = input_observed_flow,
+  alpha_lyne_hollick = input_alpha_lyne_hollick,
+  period = simul_period
+)
+```
+
+The `rechaRge` package proposes an model-free implementation of the [Kling-Gupta Efficiency](https://en.wikipedia.org/wiki/Kling%E2%80%93Gupta_efficiency) algorithm, that can be used for quality evaluation. In the case of our example the quality measurements of interest are:
+
+```{r}
+list(
+  KGE_qtot_cal_mean = mean(quality$simulation_metadata$KGE_qtot_cal),
+  KGE_qbase_cal_mean = mean(quality$simulation_metadata$KGE_qbase_cal))
+```
+
+
+## Using caRamel
+
+The [caRamel](https://cran.r-project.org/package=caRamel) R package can perform both calibration and sensitivity analysis.
+
+## Using sensitivity
+
+The [sensitivity](https://cran.r-project.org/package=sensitivity) R package can perform various sensitivity analysis.

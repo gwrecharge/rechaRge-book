@@ -1,0 +1,17 @@
+# Extensibility
+
+## Generic functions
+
+The `rechaRge` package exposes the following [S3](https://adv-r.hadley.nz/s3.html) generic functions:
+
+* [`compute_recharge`](https://gwrecharge.github.io/rechaRge/reference/compute_recharge.html), is the main function that performs the simulation computations according to the provided model parameters and input data. The result of this function is an input of the following functions.
+* [`write_recharge_results`](https://gwrecharge.github.io/rechaRge/reference/write_recharge_results.html), will write the simulation results into data files, summarized results can be included and various output file formats can be supported, depending on the model.
+* [`write_recharge_rasters`](https://gwrecharge.github.io/rechaRge/reference/write_recharge_rasters.html), will write the simulation results into raster files.
+* [`evaluate_simulation_quality`](https://gwrecharge.github.io/rechaRge/reference/evaluate_simulation_quality.html), is evaluating the quality of simulation output. This function should be used when making calibration and sensitivity analysis.
+
+You can use the reference implementation of **HydroBudget** model to extend this API with your own model. For this you will need to start with the definition of a model specific object. In the case of **HydroBudget**, this object holds the parameters of the model and some helper information about the input source format. See the [`new_hydrobugdet`](https://gwrecharge.github.io/rechaRge/reference/new_hydrobugdet.html) function.
+
+## Other languages
+
+If you have a model designed in Python, you could consider using the [`reticulate`](https://rstudio.github.io/reticulate/) R package that facilitates the binding between the R and the Python execution environments.
+

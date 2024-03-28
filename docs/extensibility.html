@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | rechaRge: the HydroBudget model</title>
+  <title>Chapter 4 Extensibility | rechaRge: the HydroBudget model</title>
   <meta name="description" content="The book presents the rechaRge package, and how it is used with the HydroBudget model." />
   <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | rechaRge: the HydroBudget model" />
+  <meta property="og:title" content="Chapter 4 Extensibility | rechaRge: the HydroBudget model" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="The book presents the rechaRge package, and how it is used with the HydroBudget model." />
   <meta name="github-repo" content="gwrecharge/rechaRge-book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | rechaRge: the HydroBudget model" />
+  <meta name="twitter:title" content="Chapter 4 Extensibility | rechaRge: the HydroBudget model" />
   
   <meta name="twitter:description" content="The book presents the rechaRge package, and how it is used with the HydroBudget model." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="about-r.html"/>
-
+<link rel="prev" href="calibration-and-sensitity.html"/>
+<link rel="next" href="about-r.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -212,16 +212,23 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered hasAnchor">
-<h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="extensibility" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Extensibility<a href="extensibility.html#extensibility" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="generic-functions" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Generic functions<a href="extensibility.html#generic-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>rechaRge</code> package exposes the following <a href="https://adv-r.hadley.nz/s3.html">S3</a> generic functions:</p>
+<ul>
+<li><a href="https://gwrecharge.github.io/rechaRge/reference/compute_recharge.html"><code>compute_recharge</code></a>, is the main function that performs the simulation computations according to the provided model parameters and input data. The result of this function is an input of the following functions.</li>
+<li><a href="https://gwrecharge.github.io/rechaRge/reference/write_recharge_results.html"><code>write_recharge_results</code></a>, will write the simulation results into data files, summarized results can be included and various output file formats can be supported, depending on the model.</li>
+<li><a href="https://gwrecharge.github.io/rechaRge/reference/write_recharge_rasters.html"><code>write_recharge_rasters</code></a>, will write the simulation results into raster files.</li>
+<li><a href="https://gwrecharge.github.io/rechaRge/reference/evaluate_simulation_quality.html"><code>evaluate_simulation_quality</code></a>, is evaluating the quality of simulation output. This function should be used when making calibration and sensitivity analysis.</li>
+</ul>
+<p>You can use the reference implementation of <strong>HydroBudget</strong> model to extend this API with your own model. For this you will need to start with the definition of a model specific object. In the case of <strong>HydroBudget</strong>, this object holds the parameters of the model and some helper information about the input source format. See the <a href="https://gwrecharge.github.io/rechaRge/reference/new_hydrobugdet.html"><code>new_hydrobugdet</code></a> function.</p>
+</div>
+<div id="other-languages" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Other languages<a href="extensibility.html#other-languages" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If you have a model designed in Python, you could consider using the <a href="https://rstudio.github.io/reticulate/"><code>reticulate</code></a> R package that facilitates the binding between the R and the Python execution environments.</p>
 
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div class="csl-entry">
-Dubois, E., M. Larocque, S. Gagné, and G. Meyzonnat. 2021. <span>“Simulation of Long-Term Spatiotemporal Variations in Regional-Scale Groundwater Recharge: Contributions of a Water Budget Approach in Cold and Humid Climates.”</span> <em>Hydrology and Earth System Sciences</em> 25 (12): 6567–89. <a href="https://doi.org/10.5194/hess-25-6567-2021">https://doi.org/10.5194/hess-25-6567-2021</a>.
-</div>
-<div class="csl-entry">
-Dubois, E., and Y. Marcon. 2024. <em>rechaRge: Groundwater Recharge Model</em>. <a href="https://github.com/gwrecharge/rechaRge/">https://github.com/gwrecharge/rechaRge/</a>.
-</div>
 </div>
 </div>
             </section>
@@ -229,8 +236,8 @@ Dubois, E., and Y. Marcon. 2024. <em>rechaRge: Groundwater Recharge Model</em>. 
           </div>
         </div>
       </div>
-<a href="about-r.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="calibration-and-sensitity.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="about-r.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -261,7 +268,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/gwrecharge/rechaRge-book/edit/main/06-references.Rmd",
+"link": "https://github.com/gwrecharge/rechaRge-book/edit/main/04-extension.Rmd",
 "text": "Edit"
 },
 "history": {

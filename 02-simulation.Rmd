@@ -1,28 +1,29 @@
-# Example
+# Simulation
 
-Load the _rechaRge_ library.
+## HydroBudget Model
+
+**HydroBudget** was developed as an accessible and computationally affordable model to simulate GWR over large areas (thousands of km2) and for long time periods (decades), in cold and humid climates. The model uses commonly available meteorological data (daily precipitation and temperature, spatialized if possible) and spatially distributed data (pedology, land cover, and slopes). It is calibrated with river flows and baseflows estimated with recursive filters. The model needs reasonable computational capacity to reach relatively short computational times. It is based on simplified representations of hydrological processes and is driven by eight parameters that need to be calibrated.
+
+**HydroBudget** uses a degree-day snow model for snow accumulation and snowmelt, and a conceptual lumped reservoir to compute the soil water budget on a daily time step. For each grid cell and each time step, the calculation distributes precipitation as runoff (R), evapotranspiration (ET), and infiltration that can reach the saturated zone if geological conditions below the soil allow  deep percolation. HB thus produces estimates of potential GWR. The daily results are compiled at a monthly time step.
+
+## Input data and parameters
+
+Start with loading the `rechaRge` library.
 
 ```{r}
 library(rechaRge)
 ```
 
-## HydroBudget model
-
-### Input data and parameters
-
-Load the input data for the simulation.
+Then load the input data for the simulation. In that case, the example datasets are available for download. The data input handler is based on `data.table::fread` function, then you can provide an URL like in the example or a local file path.
 
 ```{r}
 base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
 input_rcn <- paste0(base_url, "rcn.csv.gz") # RCN values per RCN cell ID
 input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/d per climate cell ID
 input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
-input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
-input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
-input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
 ```
 
-Set the **HydroBudget** model with the parameters values:
+Set the **HydroBudget** model with the parameters values (if you do not know which parameters to set, see the Calibration section):
 
 ```{r}
 HB <- rechaRge::new_hydrobugdet(
@@ -37,7 +38,7 @@ HB <- rechaRge::new_hydrobugdet(
 )
 ```
 
-Set the column names mappings matching the input datasets:
+As the **HydroBudget** model expects some data structure (expected data, with predefined column names), set the column names mappings matching the input datasets:
 
 ```{r}
 HB$rcn_columns <- list(
@@ -51,22 +52,17 @@ HB$rcn_climate_columns <- list(
   climate_id = "climate_cell",
   rcn_id = "cell_ID"
 )
-HB$rcn_gauging_columns <- list(
-  rcn_id = "cell_ID",
-  station_id = "gauging_stat"
-)
-HB$alpha_lyne_hollick_columns$station_id <- "station"
 ```
 
-Set the simulation period:
+Then define the simulation period (if not, the period will be discovered from the input data):
 
 ```{r}
 simul_period <- c(2010, 2017)
 ```
 
-### Simulation
+## Simulation
 
-Compute the water budget using the HydroBudget model:
+Once the **HydroBudget** object is ready, compute the water budget using the model implementation:
 
 ```{r, cache=TRUE, message=FALSE}
 water_budget <- rechaRge::compute_recharge(
@@ -94,31 +90,30 @@ The head of this data set is:
 knitr::kable(head(water_budget))
 ```
 
-### Quality assessment
+## Results
 
-Process the river flow observations and assess simulation quality:
+The simulation results can be reworked, summarized and visualized.
 
-```{r, message=FALSE}
-result <- rechaRge::evaluate_simulation_quality(
-  HB,
-  water_budget = water_budget,
-  rcn_gauging = input_rcn_gauging,
-  observed_flow = input_observed_flow,
-  alpha_lyne_hollick = input_alpha_lyne_hollick,
-  period = simul_period
-)
-```
+### Save results in files
 
-### Results handling
-
-Save the simulation results:
+Start with defining the output folder:
 
 ```{r}
 sim_dir <- file.path(tempdir(), paste0("simulation_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
+```
 
-# Write output files
+Then write the resulting water budget in different formats in this output folder:
+
+* CSV
+
+```{r}
 # CSV
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
+```
+
+* NetCDF
+
+```{r}
 # NetCDF
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
   "lon" = list(
@@ -130,6 +125,11 @@ rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format 
     unit = "m"
   )
 ))
+```
+
+* Rasters
+
+```{r}
 # Rasters
 rechaRge::write_recharge_rasters(
   HB,
@@ -138,8 +138,11 @@ rechaRge::write_recharge_rasters(
   crs = "+proj=lcc +lat_1=60 +lat_2=46 +lat_0=44 +lon_0=-68.5 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
   output_dir = sim_dir
 )
+```
 
+The output folder content should look like this:
 
+```{r}
 # List simulation output files
 list.files(sim_dir)
 ```
@@ -223,4 +226,3 @@ cowplot::plot_grid(runoffplot, aetplot, gwrplot)
 # Clean up
 unlink(sim_dir, recursive = TRUE)
 ```
-
