@@ -30,7 +30,7 @@ make_hydrobudget_eval <- function() {
 
   hydrobudget_eval <- function(i) {
     # Calibration parameters
-    HB <- rechaRge::new_hydrobugdet(
+    HB <- rechaRge::new_hydrobudget(
       T_m = x[i, 1],
       # melting temperature (°C)
       C_m = x[i, 2],

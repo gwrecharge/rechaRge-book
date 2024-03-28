@@ -9,7 +9,7 @@ The `rechaRge` package exposes the following [S3](https://adv-r.hadley.nz/s3.htm
 * [`write_recharge_rasters`](https://gwrecharge.github.io/rechaRge/reference/write_recharge_rasters.html), will write the simulation results into raster files.
 * [`evaluate_simulation_quality`](https://gwrecharge.github.io/rechaRge/reference/evaluate_simulation_quality.html), is evaluating the quality of simulation output. This function should be used when making calibration and sensitivity analysis.
 
-You can use the reference implementation of **HydroBudget** model to extend this API with your own model. For this you will need to start with the definition of a model specific object. In the case of **HydroBudget**, this object holds the parameters of the model and some helper information about the input source format. See the [`new_hydrobugdet`](https://gwrecharge.github.io/rechaRge/reference/new_hydrobugdet.html) function.
+You can use the reference implementation of **HydroBudget** model to extend this API with your own model. For this you will need to start with the definition of a model specific object. In the case of **HydroBudget**, this object holds the parameters of the model and some helper information about the input source format. See the [`new_hydrobudget`](https://gwrecharge.github.io/rechaRge/reference/new_hydrobudget.html) function.
 
 ## Other languages
 

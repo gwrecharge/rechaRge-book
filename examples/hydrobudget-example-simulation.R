@@ -19,7 +19,7 @@ input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/
 input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
 
 ## 2.3-Calibration parameters
-HB <- rechaRge::new_hydrobugdet(
+HB <- rechaRge::new_hydrobudget(
   T_m = 2.1, # melting temperature (°C)
   C_m = 6.2, # melting coefficient (mm/°C/d)
   TT_F = -17.6, # Threshold temperature for soil frost (°C)

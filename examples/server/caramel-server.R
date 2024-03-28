@@ -31,7 +31,7 @@ hydrobudget_eval_builder <- function(yearFrom = 1961, yearTo = 2017) {
     simul_period <- c(yearFrom, yearTo)
 
     # Calibration parameters
-    HB <- rechaRge::new_hydrobugdet(
+    HB <- rechaRge::new_hydrobudget(
       T_m = x[i, 1],
       # melting temperature (°C)
       C_m = x[i, 2],
