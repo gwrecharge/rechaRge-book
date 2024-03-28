@@ -591,21 +591,25 @@ $KGE_qbase_cal_mean
 </div>
 <div id="handle-calibration-results" class="section level3 hasAnchor" number="3.3.3">
 <h3><span class="header-section-number">3.3.3</span> Handle calibration results<a href="calibration-and-sensitity.html#handle-calibration-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters:</p>
+<p>Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters, ordered by “best” score:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="calibration-and-sensitity.html#cb29-1" tabindex="-1"></a>output_front <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">data.table</span>(<span class="fu">cbind</span>(calibration_results<span class="sc">$</span>parameters, calibration_results<span class="sc">$</span>objectives))</span>
-<span id="cb29-2"><a href="calibration-and-sensitity.html#cb29-2" tabindex="-1"></a><span class="fu">colnames</span>(output_front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;T_m&quot;</span>, <span class="st">&quot;C_m&quot;</span>, <span class="st">&quot;TT_F&quot;</span>, <span class="st">&quot;F_T&quot;</span>, <span class="st">&quot;t_API&quot;</span>, <span class="st">&quot;f_runoff&quot;</span>, <span class="st">&quot;sw_m&quot;</span>, <span class="st">&quot;f_inf&quot;</span>, <span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span></code></pre></div>
+<span id="cb29-2"><a href="calibration-and-sensitity.html#cb29-2" tabindex="-1"></a><span class="fu">colnames</span>(output_front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;T_m&quot;</span>, <span class="st">&quot;C_m&quot;</span>, <span class="st">&quot;TT_F&quot;</span>, <span class="st">&quot;F_T&quot;</span>, <span class="st">&quot;t_API&quot;</span>, <span class="st">&quot;f_runoff&quot;</span>, <span class="st">&quot;sw_m&quot;</span>, <span class="st">&quot;f_inf&quot;</span>, <span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span>
+<span id="cb29-3"><a href="calibration-and-sensitity.html#cb29-3" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fl">0.6</span> <span class="co"># choose your KGE weight criteria</span></span>
+<span id="cb29-4"><a href="calibration-and-sensitity.html#cb29-4" tabindex="-1"></a>output_front[, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">KGE_score =</span> (KGE_qtot <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> y) <span class="sc">+</span> KGE_qbase <span class="sc">*</span> y))]</span>
+<span id="cb29-5"><a href="calibration-and-sensitity.html#cb29-5" tabindex="-1"></a>output_front <span class="ot">&lt;-</span> output_front[<span class="fu">order</span>(KGE_score, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span></code></pre></div>
 <table>
 <colgroup>
+<col width="8%" />
+<col width="8%" />
 <col width="9%" />
 <col width="9%" />
-<col width="10%" />
-<col width="10%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
 <col width="9%" />
 <col width="9%" />
 <col width="9%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
+<col width="9%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -619,9 +623,36 @@ $KGE_qbase_cal_mean
 <th align="right">f_inf</th>
 <th align="right">KGE_qtot</th>
 <th align="right">KGE_qbase</th>
+<th align="right">KGE_score</th>
 </tr>
 </thead>
 <tbody>
+<tr class="odd">
+<td align="right">1.098950</td>
+<td align="right">4.021552</td>
+<td align="right">-18.82435</td>
+<td align="right">27.333958</td>
+<td align="right">3.599702</td>
+<td align="right">0.593452</td>
+<td align="right">256.5890</td>
+<td align="right">0.0485772</td>
+<td align="right">0.6206263</td>
+<td align="right">0.6901654</td>
+<td align="right">0.6623497</td>
+</tr>
+<tr class="even">
+<td align="right">1.848664</td>
+<td align="right">6.390459</td>
+<td align="right">-16.21821</td>
+<td align="right">8.778428</td>
+<td align="right">3.089753</td>
+<td align="right">0.519164</td>
+<td align="right">405.5801</td>
+<td align="right">0.0433969</td>
+<td align="right">0.4614259</td>
+<td align="right">0.7369588</td>
+<td align="right">0.6267456</td>
+</tr>
 <tr class="odd">
 <td align="right">2.254748</td>
 <td align="right">4.308423</td>
@@ -633,30 +664,7 @@ $KGE_qbase_cal_mean
 <td align="right">0.0404605</td>
 <td align="right">0.6465410</td>
 <td align="right">0.5990976</td>
-</tr>
-<tr class="even">
-<td align="right">1.098950</td>
-<td align="right">4.021552</td>
-<td align="right">-18.82435</td>
-<td align="right">27.333958</td>
-<td align="right">3.599702</td>
-<td align="right">0.593452</td>
-<td align="right">256.5890</td>
-<td align="right">0.0485772</td>
-<td align="right">0.6206263</td>
-<td align="right">0.6901654</td>
-</tr>
-<tr class="odd">
-<td align="right">1.848664</td>
-<td align="right">6.390459</td>
-<td align="right">-16.21821</td>
-<td align="right">8.778428</td>
-<td align="right">3.089753</td>
-<td align="right">0.519164</td>
-<td align="right">405.5801</td>
-<td align="right">0.0433969</td>
-<td align="right">0.4614259</td>
-<td align="right">0.7369588</td>
+<td align="right">0.6180750</td>
 </tr>
 </tbody>
 </table>

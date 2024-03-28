@@ -121,6 +121,11 @@ results_
 # Merging simulation outputs with front objectives, to get corresponding parameters
 output_front <- data.table::data.table(cbind(results_$parameters, results_$objectives))
 colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
+# Order by "best" score
+y <- 0.6
+output_front[, `:=`(KGE_score = (KGE_qtot * (1 - y) + KGE_qbase * y))]
+output_front <- output_front[order(KGE_score, decreasing = TRUE)]
+output_front
 
 # Plot using caRamel
 plot_caramel(results_, objnames = c("KGE_qtot", "KGE_qbase"))

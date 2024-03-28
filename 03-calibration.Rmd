@@ -318,11 +318,14 @@ calibration_results <- caRamel(
 ```
 ### Handle calibration results
 
-Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters:
+Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters, ordered by "best" score:
 
 ```{r}
 output_front <- data.table::data.table(cbind(calibration_results$parameters, calibration_results$objectives))
 colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
+y <- 0.6 # choose your KGE weight criteria
+output_front[, `:=`(KGE_score = (KGE_qtot * (1 - y) + KGE_qbase * y))]
+output_front <- output_front[order(KGE_score, decreasing = TRUE)]
 ```
 
 ```{r, echo=FALSE}
