@@ -13,77 +13,84 @@ bounds <- matrix(nrow = nvar, ncol = 2)
 bounds[, 1] <- c(1, 4, -20, 5, 3.05, 0.5, 160, 0.01)
 bounds[, 2] <- c(2.5, 6.5, -12, 30, 4.8, 0.6, 720, 0.05)
 
-hydrobudget_eval <- function(i) {
-  # Input data
+make_hydrobudget_eval <- function() {
+  # Preload input data
   # Quiet download
-  options(datatable.showProgress = FALSE)
+  options(datatable.showProgress = T)
   # use input example files provided by the package
   base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
-  input_rcn <- paste0(base_url, "rcn.csv.gz") # RCN values per RCN cell ID
-  input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/d per climate cell ID
-  input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between climate and RCN cell IDs
-  input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gauging station and RCN cell IDs
-  input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
-  input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
+  input_rcn <- fread(paste0(base_url, "rcn.csv.gz")) # RCN values per RCN cell ID
+  input_climate <- fread(paste0(base_url, "climate.csv.gz")) # precipitation total in mm/d per climate cell ID
+  input_rcn_climate <- fread(paste0(base_url, "rcn_climate.csv.gz")) # relation between climate and RCN cell IDs
+  input_rcn_gauging <- fread(paste0(base_url, "rcn_gauging.csv.gz")) # relation between gauging station and RCN cell IDs
+  input_observed_flow <- fread(paste0(base_url, "observed_flow.csv.gz")) # flow rates in mm/d
+  input_alpha_lyne_hollick <- fread(paste0(base_url, "alpha_lyne_hollick.csv.gz"))
   # Simulation period
   simul_period <- c(2017, 2017)
-  # Calibration parameters
-  HB <- rechaRge::new_hydrobugdet(
-    T_m = x[i, 1],
-    # melting temperature (°C)
-    C_m = x[i, 2],
-    # melting coefficient (mm/°C/d)
-    TT_F = x[i, 3],
-    # Threshold temperature for soil frost (°C)
-    F_T = x[i, 4],
-    # Freezing time (d)
-    t_API = x[i, 5],
-    # Antecedent precipitation index time (d)
-    f_runoff = x[i, 6],
-    # Runoff factor (-)
-    sw_m = x[i, 7],
-    # Maximum soil water content (mm)
-    f_inf = x[i, 8] # infiltration factor (-)
-  )
-  # Input data specific settings
-  HB$rcn_columns <- list(
-    rcn_id = "cell_ID",
-    RCNII = "RCNII",
-    lon = "X_L93",
-    lat = "Y_L93"
-  )
-  HB$climate_columns$climate_id <- "climate_cell"
-  HB$rcn_climate_columns <- list(climate_id = "climate_cell",
-                                 rcn_id = "cell_ID")
-  HB$rcn_gauging_columns <- list(rcn_id = "cell_ID",
-                                 station_id = "gauging_stat")
-  HB$alpha_lyne_hollick_columns$station_id <- "station"
 
-  # Simulation with the HydroBudget model
-  water_budget <- rechaRge::compute_recharge(
-    HB,
-    rcn = input_rcn,
-    climate = input_climate,
-    rcn_climate = input_rcn_climate,
-    period = simul_period,
-    workers = 1
-  )
+  hydrobudget_eval <- function(i) {
+    # Calibration parameters
+    HB <- rechaRge::new_hydrobugdet(
+      T_m = x[i, 1],
+      # melting temperature (°C)
+      C_m = x[i, 2],
+      # melting coefficient (mm/°C/d)
+      TT_F = x[i, 3],
+      # Threshold temperature for soil frost (°C)
+      F_T = x[i, 4],
+      # Freezing time (d)
+      t_API = x[i, 5],
+      # Antecedent precipitation index time (d)
+      f_runoff = x[i, 6],
+      # Runoff factor (-)
+      sw_m = x[i, 7],
+      # Maximum soil water content (mm)
+      f_inf = x[i, 8] # infiltration factor (-)
+    )
+    # Input data specific settings
+    HB$rcn_columns <- list(
+      rcn_id = "cell_ID",
+      RCNII = "RCNII",
+      lon = "X_L93",
+      lat = "Y_L93"
+    )
+    HB$climate_columns$climate_id <- "climate_cell"
+    HB$rcn_climate_columns <- list(climate_id = "climate_cell",
+                                   rcn_id = "cell_ID")
+    HB$rcn_gauging_columns <- list(rcn_id = "cell_ID",
+                                   station_id = "gauging_stat")
+    HB$alpha_lyne_hollick_columns$station_id <- "station"
 
-  # Evaluate simulation quality
-  result <- rechaRge::evaluate_simulation_quality(
-    HB,
-    water_budget = water_budget,
-    rcn_gauging = input_rcn_gauging,
-    observed_flow = input_observed_flow,
-    alpha_lyne_hollick = input_alpha_lyne_hollick,
-    period = simul_period
-  )
+    # Simulation with the HydroBudget model
+    rechaRge::with_verbose(FALSE)
+    water_budget <- rechaRge::compute_recharge(
+      HB,
+      rcn = input_rcn,
+      climate = input_climate,
+      rcn_climate = input_rcn_climate,
+      period = simul_period,
+      workers = 1
+    )
 
-  return(c(
-    mean(result$simulation_metadata$KGE_qtot_cal),
-    mean(result$simulation_metadata$KGE_qbase_cal)
-  ))
+    # Evaluate simulation quality
+    quality <- rechaRge::evaluate_simulation_quality(
+      HB,
+      water_budget = water_budget,
+      rcn_gauging = input_rcn_gauging,
+      observed_flow = input_observed_flow,
+      alpha_lyne_hollick = input_alpha_lyne_hollick,
+      period = simul_period
+    )
+
+    return(c(
+      mean(quality$simulation_metadata$KGE_qtot_cal),
+      mean(quality$simulation_metadata$KGE_qbase_cal)
+    ))
+  }
+
+  return(hydrobudget_eval)
 }
+
 
 #
 # Calibration with sensitivity
@@ -95,7 +102,7 @@ results_ <- caRamel(
   minmax =  minmax,
   bounds = bounds,
   sensitivity = TRUE,
-  func = hydrobudget_eval,
+  func = make_hydrobudget_eval(),
   popsize = 10,
   archsize = 100,
   maxrun = 10,
@@ -132,3 +139,4 @@ ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
        x = "KGE_qtot", y = "KGE_qbase",
        color = "Dataset") +
   theme_minimal()
+
