@@ -9,3 +9,4 @@ rechaRge-book_cache
 rechaRge-book_files
 *.rds
 !docs/*
+*.log

@@ -182,12 +182,17 @@ div.csl-indent {
 <li class="chapter" data-level="3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html"><i class="fa fa-check"></i><b>3</b> Calibration and Sensitity</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#quality-assessment"><i class="fa fa-check"></i><b>3.1</b> Quality assessment</a></li>
-<li class="chapter" data-level="3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-sensitivity"><i class="fa fa-check"></i><b>3.2</b> Using sensitivity</a></li>
+<li class="chapter" data-level="3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-sensitivity"><i class="fa fa-check"></i><b>3.2</b> Using sensitivity</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#define-model-function"><i class="fa fa-check"></i><b>3.2.1</b> Define model function</a></li>
+<li class="chapter" data-level="3.2.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#run-sensitivity-analysis"><i class="fa fa-check"></i><b>3.2.2</b> Run sensitivity analysis</a></li>
+<li class="chapter" data-level="3.2.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#handle-sensitivity-results"><i class="fa fa-check"></i><b>3.2.3</b> Handle sensitivity results</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#using-caramel"><i class="fa fa-check"></i><b>3.3</b> Using caRamel</a>
 <ul>
 <li class="chapter" data-level="3.3.1" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#define-objective-function"><i class="fa fa-check"></i><b>3.3.1</b> Define objective function</a></li>
-<li class="chapter" data-level="3.3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#run-calibration"><i class="fa fa-check"></i><b>3.3.2</b> Run calibration</a></li>
-<li class="chapter" data-level="3.3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#analyse-calibration-results"><i class="fa fa-check"></i><b>3.3.3</b> Analyse calibration results</a></li>
+<li class="chapter" data-level="3.3.2" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#run-calibration-analysis"><i class="fa fa-check"></i><b>3.3.2</b> Run calibration analysis</a></li>
+<li class="chapter" data-level="3.3.3" data-path="calibration-and-sensitity.html"><a href="calibration-and-sensitity.html#handle-calibration-results"><i class="fa fa-check"></i><b>3.3.3</b> Handle calibration results</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="extensibility.html"><a href="extensibility.html"><i class="fa fa-check"></i><b>4</b> Extensibility</a>
@@ -254,6 +259,220 @@ $KGE_qbase_cal_mean
 <div id="using-sensitivity" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Using sensitivity<a href="calibration-and-sensitity.html#using-sensitivity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <a href="https://cran.r-project.org/package=sensitivity">sensitivity</a> R package can perform various sensitivity analysis.</p>
+<div id="define-model-function" class="section level3 hasAnchor" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Define model function<a href="calibration-and-sensitity.html#define-model-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="calibration-and-sensitity.html#cb22-1" tabindex="-1"></a><span class="fu">library</span>(rechaRge)</span>
+<span id="cb22-2"><a href="calibration-and-sensitity.html#cb22-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb22-3"><a href="calibration-and-sensitity.html#cb22-3" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="calibration-and-sensitity.html#cb22-4" tabindex="-1"></a><span class="co"># Preload input data</span></span>
+<span id="cb22-5"><a href="calibration-and-sensitity.html#cb22-5" tabindex="-1"></a><span class="co"># Quiet download</span></span>
+<span id="cb22-6"><a href="calibration-and-sensitity.html#cb22-6" tabindex="-1"></a><span class="fu">options</span>(<span class="at">datatable.showProgress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-7"><a href="calibration-and-sensitity.html#cb22-7" tabindex="-1"></a><span class="co"># use input example files provided by the package</span></span>
+<span id="cb22-8"><a href="calibration-and-sensitity.html#cb22-8" tabindex="-1"></a>base_url <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/&quot;</span></span>
+<span id="cb22-9"><a href="calibration-and-sensitity.html#cb22-9" tabindex="-1"></a>input_rcn <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn.csv.gz&quot;</span>))</span>
+<span id="cb22-10"><a href="calibration-and-sensitity.html#cb22-10" tabindex="-1"></a>input_climate <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;climate.csv.gz&quot;</span>))</span>
+<span id="cb22-11"><a href="calibration-and-sensitity.html#cb22-11" tabindex="-1"></a>input_rcn_climate <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_climate.csv.gz&quot;</span>))</span>
+<span id="cb22-12"><a href="calibration-and-sensitity.html#cb22-12" tabindex="-1"></a>input_rcn_gauging <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_gauging.csv.gz&quot;</span>))</span>
+<span id="cb22-13"><a href="calibration-and-sensitity.html#cb22-13" tabindex="-1"></a>input_observed_flow <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;observed_flow.csv.gz&quot;</span>))</span>
+<span id="cb22-14"><a href="calibration-and-sensitity.html#cb22-14" tabindex="-1"></a>input_alpha_lyne_hollick <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;alpha_lyne_hollick.csv.gz&quot;</span>))</span>
+<span id="cb22-15"><a href="calibration-and-sensitity.html#cb22-15" tabindex="-1"></a><span class="co"># Simulation period</span></span>
+<span id="cb22-16"><a href="calibration-and-sensitity.html#cb22-16" tabindex="-1"></a>simul_period <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2017</span>, <span class="dv">2017</span>)</span>
+<span id="cb22-17"><a href="calibration-and-sensitity.html#cb22-17" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="calibration-and-sensitity.html#cb22-18" tabindex="-1"></a>hydrobudget_eval <span class="ot">&lt;-</span> <span class="cf">function</span>(i) {</span>
+<span id="cb22-19"><a href="calibration-and-sensitity.html#cb22-19" tabindex="-1"></a>  <span class="co"># Calibration parameters</span></span>
+<span id="cb22-20"><a href="calibration-and-sensitity.html#cb22-20" tabindex="-1"></a>  HB <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">new_hydrobugdet</span>(</span>
+<span id="cb22-21"><a href="calibration-and-sensitity.html#cb22-21" tabindex="-1"></a>    <span class="at">T_m =</span> i[<span class="dv">1</span>],</span>
+<span id="cb22-22"><a href="calibration-and-sensitity.html#cb22-22" tabindex="-1"></a>    <span class="co"># melting temperature (°C)</span></span>
+<span id="cb22-23"><a href="calibration-and-sensitity.html#cb22-23" tabindex="-1"></a>    <span class="at">C_m =</span> i[<span class="dv">2</span>],</span>
+<span id="cb22-24"><a href="calibration-and-sensitity.html#cb22-24" tabindex="-1"></a>    <span class="co"># melting coefficient (mm/°C/d)</span></span>
+<span id="cb22-25"><a href="calibration-and-sensitity.html#cb22-25" tabindex="-1"></a>    <span class="at">TT_F =</span> i[<span class="dv">3</span>],</span>
+<span id="cb22-26"><a href="calibration-and-sensitity.html#cb22-26" tabindex="-1"></a>    <span class="co"># Threshold temperature for soil frost (°C)</span></span>
+<span id="cb22-27"><a href="calibration-and-sensitity.html#cb22-27" tabindex="-1"></a>    <span class="at">F_T =</span> i[<span class="dv">4</span>],</span>
+<span id="cb22-28"><a href="calibration-and-sensitity.html#cb22-28" tabindex="-1"></a>    <span class="co"># Freezing time (d)</span></span>
+<span id="cb22-29"><a href="calibration-and-sensitity.html#cb22-29" tabindex="-1"></a>    <span class="at">t_API =</span> i[<span class="dv">5</span>],</span>
+<span id="cb22-30"><a href="calibration-and-sensitity.html#cb22-30" tabindex="-1"></a>    <span class="co"># Antecedent precipitation index time (d)</span></span>
+<span id="cb22-31"><a href="calibration-and-sensitity.html#cb22-31" tabindex="-1"></a>    <span class="at">f_runoff =</span> i[<span class="dv">6</span>],</span>
+<span id="cb22-32"><a href="calibration-and-sensitity.html#cb22-32" tabindex="-1"></a>    <span class="co"># Runoff factor (-)</span></span>
+<span id="cb22-33"><a href="calibration-and-sensitity.html#cb22-33" tabindex="-1"></a>    <span class="at">sw_m =</span> i[<span class="dv">7</span>],</span>
+<span id="cb22-34"><a href="calibration-and-sensitity.html#cb22-34" tabindex="-1"></a>    <span class="co"># Maximum soil water content (mm)</span></span>
+<span id="cb22-35"><a href="calibration-and-sensitity.html#cb22-35" tabindex="-1"></a>    <span class="at">f_inf =</span> i[<span class="dv">8</span>] <span class="co"># infiltration factor (-)</span></span>
+<span id="cb22-36"><a href="calibration-and-sensitity.html#cb22-36" tabindex="-1"></a>  )</span>
+<span id="cb22-37"><a href="calibration-and-sensitity.html#cb22-37" tabindex="-1"></a>  <span class="co"># Input data specific settings</span></span>
+<span id="cb22-38"><a href="calibration-and-sensitity.html#cb22-38" tabindex="-1"></a>  HB<span class="sc">$</span>rcn_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb22-39"><a href="calibration-and-sensitity.html#cb22-39" tabindex="-1"></a>    <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
+<span id="cb22-40"><a href="calibration-and-sensitity.html#cb22-40" tabindex="-1"></a>    <span class="at">RCNII =</span> <span class="st">&quot;RCNII&quot;</span>,</span>
+<span id="cb22-41"><a href="calibration-and-sensitity.html#cb22-41" tabindex="-1"></a>    <span class="at">lon =</span> <span class="st">&quot;X_L93&quot;</span>,</span>
+<span id="cb22-42"><a href="calibration-and-sensitity.html#cb22-42" tabindex="-1"></a>    <span class="at">lat =</span> <span class="st">&quot;Y_L93&quot;</span></span>
+<span id="cb22-43"><a href="calibration-and-sensitity.html#cb22-43" tabindex="-1"></a>  )</span>
+<span id="cb22-44"><a href="calibration-and-sensitity.html#cb22-44" tabindex="-1"></a>  HB<span class="sc">$</span>climate_columns<span class="sc">$</span>climate_id <span class="ot">&lt;-</span> <span class="st">&quot;climate_cell&quot;</span></span>
+<span id="cb22-45"><a href="calibration-and-sensitity.html#cb22-45" tabindex="-1"></a>  HB<span class="sc">$</span>rcn_climate_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">climate_id =</span> <span class="st">&quot;climate_cell&quot;</span>,</span>
+<span id="cb22-46"><a href="calibration-and-sensitity.html#cb22-46" tabindex="-1"></a>                                 <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>)</span>
+<span id="cb22-47"><a href="calibration-and-sensitity.html#cb22-47" tabindex="-1"></a>  HB<span class="sc">$</span>rcn_gauging_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
+<span id="cb22-48"><a href="calibration-and-sensitity.html#cb22-48" tabindex="-1"></a>                                 <span class="at">station_id =</span> <span class="st">&quot;gauging_stat&quot;</span>)</span>
+<span id="cb22-49"><a href="calibration-and-sensitity.html#cb22-49" tabindex="-1"></a>  HB<span class="sc">$</span>alpha_lyne_hollick_columns<span class="sc">$</span>station_id <span class="ot">&lt;-</span> <span class="st">&quot;station&quot;</span></span>
+<span id="cb22-50"><a href="calibration-and-sensitity.html#cb22-50" tabindex="-1"></a></span>
+<span id="cb22-51"><a href="calibration-and-sensitity.html#cb22-51" tabindex="-1"></a>  <span class="co"># Simulation with the HydroBudget model</span></span>
+<span id="cb22-52"><a href="calibration-and-sensitity.html#cb22-52" tabindex="-1"></a>  water_budget <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">compute_recharge</span>(</span>
+<span id="cb22-53"><a href="calibration-and-sensitity.html#cb22-53" tabindex="-1"></a>    HB,</span>
+<span id="cb22-54"><a href="calibration-and-sensitity.html#cb22-54" tabindex="-1"></a>    <span class="at">rcn =</span> input_rcn,</span>
+<span id="cb22-55"><a href="calibration-and-sensitity.html#cb22-55" tabindex="-1"></a>    <span class="at">climate =</span> input_climate,</span>
+<span id="cb22-56"><a href="calibration-and-sensitity.html#cb22-56" tabindex="-1"></a>    <span class="at">rcn_climate =</span> input_rcn_climate,</span>
+<span id="cb22-57"><a href="calibration-and-sensitity.html#cb22-57" tabindex="-1"></a>    <span class="at">period =</span> simul_period,</span>
+<span id="cb22-58"><a href="calibration-and-sensitity.html#cb22-58" tabindex="-1"></a>    <span class="at">workers =</span> <span class="dv">1</span></span>
+<span id="cb22-59"><a href="calibration-and-sensitity.html#cb22-59" tabindex="-1"></a>  )</span>
+<span id="cb22-60"><a href="calibration-and-sensitity.html#cb22-60" tabindex="-1"></a></span>
+<span id="cb22-61"><a href="calibration-and-sensitity.html#cb22-61" tabindex="-1"></a>  <span class="co"># Evaluate simulation quality</span></span>
+<span id="cb22-62"><a href="calibration-and-sensitity.html#cb22-62" tabindex="-1"></a>  result <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">evaluate_simulation_quality</span>(</span>
+<span id="cb22-63"><a href="calibration-and-sensitity.html#cb22-63" tabindex="-1"></a>    HB,</span>
+<span id="cb22-64"><a href="calibration-and-sensitity.html#cb22-64" tabindex="-1"></a>    <span class="at">water_budget =</span> water_budget,</span>
+<span id="cb22-65"><a href="calibration-and-sensitity.html#cb22-65" tabindex="-1"></a>    <span class="at">rcn_gauging =</span> input_rcn_gauging,</span>
+<span id="cb22-66"><a href="calibration-and-sensitity.html#cb22-66" tabindex="-1"></a>    <span class="at">observed_flow =</span> input_observed_flow,</span>
+<span id="cb22-67"><a href="calibration-and-sensitity.html#cb22-67" tabindex="-1"></a>    <span class="at">alpha_lyne_hollick =</span> input_alpha_lyne_hollick,</span>
+<span id="cb22-68"><a href="calibration-and-sensitity.html#cb22-68" tabindex="-1"></a>    <span class="at">period =</span> simul_period</span>
+<span id="cb22-69"><a href="calibration-and-sensitity.html#cb22-69" tabindex="-1"></a>  )</span>
+<span id="cb22-70"><a href="calibration-and-sensitity.html#cb22-70" tabindex="-1"></a></span>
+<span id="cb22-71"><a href="calibration-and-sensitity.html#cb22-71" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(</span>
+<span id="cb22-72"><a href="calibration-and-sensitity.html#cb22-72" tabindex="-1"></a>    <span class="fu">mean</span>(result<span class="sc">$</span>simulation_metadata<span class="sc">$</span>KGE_qtot_cal),</span>
+<span id="cb22-73"><a href="calibration-and-sensitity.html#cb22-73" tabindex="-1"></a>    <span class="fu">mean</span>(result<span class="sc">$</span>simulation_metadata<span class="sc">$</span>KGE_qbase_cal)</span>
+<span id="cb22-74"><a href="calibration-and-sensitity.html#cb22-74" tabindex="-1"></a>  ))</span>
+<span id="cb22-75"><a href="calibration-and-sensitity.html#cb22-75" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="run-sensitivity-analysis" class="section level3 hasAnchor" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> Run sensitivity analysis<a href="calibration-and-sensitity.html#run-sensitivity-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="calibration-and-sensitity.html#cb23-1" tabindex="-1"></a><span class="fu">library</span>(sensitivity)</span>
+<span id="cb23-2"><a href="calibration-and-sensitity.html#cb23-2" tabindex="-1"></a><span class="co"># Use future package to parallel</span></span>
+<span id="cb23-3"><a href="calibration-and-sensitity.html#cb23-3" tabindex="-1"></a><span class="fu">library</span>(future.apply)</span>
+<span id="cb23-4"><a href="calibration-and-sensitity.html#cb23-4" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="calibration-and-sensitity.html#cb23-5" tabindex="-1"></a>hydrobudget_sens <span class="ot">&lt;-</span> <span class="cf">function</span>(X) {</span>
+<span id="cb23-6"><a href="calibration-and-sensitity.html#cb23-6" tabindex="-1"></a>  kge_hb <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">t</span>(<span class="fu">future_apply</span>(X, <span class="at">MARGIN =</span> <span class="dv">1</span>, <span class="at">FUN =</span> hydrobudget_eval, <span class="at">future.seed =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb23-7"><a href="calibration-and-sensitity.html#cb23-7" tabindex="-1"></a>  <span class="fu">return</span>(kge_hb)</span>
+<span id="cb23-8"><a href="calibration-and-sensitity.html#cb23-8" tabindex="-1"></a>}</span>
+<span id="cb23-9"><a href="calibration-and-sensitity.html#cb23-9" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="calibration-and-sensitity.html#cb23-10" tabindex="-1"></a><span class="co"># Number of variables</span></span>
+<span id="cb23-11"><a href="calibration-and-sensitity.html#cb23-11" tabindex="-1"></a>nvar <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb23-12"><a href="calibration-and-sensitity.html#cb23-12" tabindex="-1"></a><span class="co"># Range of the parameters</span></span>
+<span id="cb23-13"><a href="calibration-and-sensitity.html#cb23-13" tabindex="-1"></a>binf <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">5</span>, <span class="fl">3.05</span>, <span class="fl">0.5</span>, <span class="dv">160</span>, <span class="fl">0.01</span>)</span>
+<span id="cb23-14"><a href="calibration-and-sensitity.html#cb23-14" tabindex="-1"></a>bsup <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="fl">6.5</span>, <span class="sc">-</span><span class="dv">12</span>, <span class="dv">30</span>, <span class="fl">4.8</span>, <span class="fl">0.6</span>, <span class="dv">720</span>, <span class="fl">0.05</span>)</span>
+<span id="cb23-15"><a href="calibration-and-sensitity.html#cb23-15" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="calibration-and-sensitity.html#cb23-16" tabindex="-1"></a><span class="co"># parallel computation setting</span></span>
+<span id="cb23-17"><a href="calibration-and-sensitity.html#cb23-17" tabindex="-1"></a><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">3</span>)</span>
+<span id="cb23-18"><a href="calibration-and-sensitity.html#cb23-18" tabindex="-1"></a><span class="co">#plan(sequential) # non parallel</span></span>
+<span id="cb23-19"><a href="calibration-and-sensitity.html#cb23-19" tabindex="-1"></a>sensitivity_results <span class="ot">&lt;-</span> <span class="fu">morris</span>(</span>
+<span id="cb23-20"><a href="calibration-and-sensitity.html#cb23-20" tabindex="-1"></a>  <span class="at">model =</span> hydrobudget_sens,</span>
+<span id="cb23-21"><a href="calibration-and-sensitity.html#cb23-21" tabindex="-1"></a>  <span class="at">factors =</span> nvar,</span>
+<span id="cb23-22"><a href="calibration-and-sensitity.html#cb23-22" tabindex="-1"></a>  <span class="at">r =</span> <span class="dv">2</span>,</span>
+<span id="cb23-23"><a href="calibration-and-sensitity.html#cb23-23" tabindex="-1"></a>  <span class="at">design =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;oat&quot;</span>, <span class="at">levels =</span> <span class="dv">5</span>, <span class="at">grid.jump =</span> <span class="dv">3</span>),</span>
+<span id="cb23-24"><a href="calibration-and-sensitity.html#cb23-24" tabindex="-1"></a>  <span class="at">binf =</span> binf,</span>
+<span id="cb23-25"><a href="calibration-and-sensitity.html#cb23-25" tabindex="-1"></a>  <span class="at">bsup =</span> bsup)</span></code></pre></div>
+</div>
+<div id="handle-sensitivity-results" class="section level3 hasAnchor" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Handle sensitivity results<a href="calibration-and-sensitity.html#handle-sensitivity-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="calibration-and-sensitity.html#cb24-1" tabindex="-1"></a><span class="co"># Variable of interest</span></span>
+<span id="cb24-2"><a href="calibration-and-sensitity.html#cb24-2" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">apply</span>(sensitivity_results<span class="sc">$</span>ee, <span class="dv">3</span>, <span class="cf">function</span>(M){</span>
+<span id="cb24-3"><a href="calibration-and-sensitity.html#cb24-3" tabindex="-1"></a>  <span class="fu">apply</span>(M, <span class="dv">2</span>, mean)</span>
+<span id="cb24-4"><a href="calibration-and-sensitity.html#cb24-4" tabindex="-1"></a>})</span>
+<span id="cb24-5"><a href="calibration-and-sensitity.html#cb24-5" tabindex="-1"></a>mu.star <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">abs</span>(sensitivity_results<span class="sc">$</span>ee), <span class="dv">3</span>, <span class="cf">function</span>(M){</span>
+<span id="cb24-6"><a href="calibration-and-sensitity.html#cb24-6" tabindex="-1"></a>  <span class="fu">apply</span>(M, <span class="dv">2</span>, mean)</span>
+<span id="cb24-7"><a href="calibration-and-sensitity.html#cb24-7" tabindex="-1"></a>})</span>
+<span id="cb24-8"><a href="calibration-and-sensitity.html#cb24-8" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">apply</span>(sensitivity_results<span class="sc">$</span>ee, <span class="dv">3</span>, <span class="cf">function</span>(M){</span>
+<span id="cb24-9"><a href="calibration-and-sensitity.html#cb24-9" tabindex="-1"></a>  <span class="fu">apply</span>(M, <span class="dv">2</span>, sd)</span>
+<span id="cb24-10"><a href="calibration-and-sensitity.html#cb24-10" tabindex="-1"></a>})</span>
+<span id="cb24-11"><a href="calibration-and-sensitity.html#cb24-11" tabindex="-1"></a>sensitivity_eval <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="at">mu =</span> mu, <span class="at">mu.star =</span> mu.star, <span class="at">sigma =</span> sigma)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="14%" />
+<col width="18%" />
+<col width="18%" />
+<col width="16%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">mu.ycol1</th>
+<th align="right">mu.ycol2</th>
+<th align="right">mu.star.ycol1</th>
+<th align="right">mu.star.ycol2</th>
+<th align="right">sigma.ycol1</th>
+<th align="right">sigma.ycol2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.0633015</td>
+<td align="right">-0.0929108</td>
+<td align="right">0.0633015</td>
+<td align="right">0.0929108</td>
+<td align="right">0.0082553</td>
+<td align="right">0.0174579</td>
+</tr>
+<tr class="even">
+<td align="right">-0.0124986</td>
+<td align="right">0.0009711</td>
+<td align="right">0.0257674</td>
+<td align="right">0.0071172</td>
+<td align="right">0.0364407</td>
+<td align="right">0.0100653</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0140972</td>
+<td align="right">0.0179076</td>
+<td align="right">0.0140972</td>
+<td align="right">0.0179076</td>
+<td align="right">0.0005858</td>
+<td align="right">0.0046548</td>
+</tr>
+<tr class="even">
+<td align="right">0.0463531</td>
+<td align="right">-0.1055948</td>
+<td align="right">0.0463531</td>
+<td align="right">0.1055948</td>
+<td align="right">0.0222107</td>
+<td align="right">0.0254757</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.3839373</td>
+<td align="right">-0.4996540</td>
+<td align="right">0.3839373</td>
+<td align="right">0.4996540</td>
+<td align="right">0.1675730</td>
+<td align="right">0.2481429</td>
+</tr>
+<tr class="even">
+<td align="right">0.1411047</td>
+<td align="right">0.9148704</td>
+<td align="right">0.1411047</td>
+<td align="right">0.9148704</td>
+<td align="right">0.0008048</td>
+<td align="right">0.0235482</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="calibration-and-sensitity.html#cb25-1" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb25-2"><a href="calibration-and-sensitity.html#cb25-2" tabindex="-1"></a><span class="fu">plot</span>(sensitivity_results, <span class="at">y_col =</span> <span class="dv">2</span>)</span>
+<span id="cb25-3"><a href="calibration-and-sensitity.html#cb25-3" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">&quot;y_col = 2&quot;</span>)</span></code></pre></div>
+<p><img src="fig/unnamed-chunk-24-1.png" width="672" /></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="calibration-and-sensitity.html#cb26-1" tabindex="-1"></a><span class="fu">plot.new</span>()</span>
+<span id="cb26-2"><a href="calibration-and-sensitity.html#cb26-2" tabindex="-1"></a><span class="fu">plot</span>(sensitivity_results, <span class="at">y_col =</span> <span class="dv">1</span>)</span>
+<span id="cb26-3"><a href="calibration-and-sensitity.html#cb26-3" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">&quot;y_col = 1&quot;</span>)</span></code></pre></div>
+<p><img src="fig/unnamed-chunk-25-1.png" width="672" /></p>
+</div>
 </div>
 <div id="using-caramel" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Using caRamel<a href="calibration-and-sensitity.html#using-caramel" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -261,131 +480,128 @@ $KGE_qbase_cal_mean
 <div id="define-objective-function" class="section level3 hasAnchor" number="3.3.1">
 <h3><span class="header-section-number">3.3.1</span> Define objective function<a href="calibration-and-sensitity.html#define-objective-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We will start by defining the objective function to optimize: this function will run a simulation and quality evaluation and its returned values will be used by <code>caRamel</code> to measure the quality of the injected parameters.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="calibration-and-sensitity.html#cb22-1" tabindex="-1"></a><span class="fu">library</span>(rechaRge)</span>
-<span id="cb22-2"><a href="calibration-and-sensitity.html#cb22-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb22-3"><a href="calibration-and-sensitity.html#cb22-3" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="calibration-and-sensitity.html#cb22-4" tabindex="-1"></a>make_hydrobudget_eval <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb22-5"><a href="calibration-and-sensitity.html#cb22-5" tabindex="-1"></a>  <span class="co"># Preload input data</span></span>
-<span id="cb22-6"><a href="calibration-and-sensitity.html#cb22-6" tabindex="-1"></a>  <span class="co"># Quiet download</span></span>
-<span id="cb22-7"><a href="calibration-and-sensitity.html#cb22-7" tabindex="-1"></a>  <span class="fu">options</span>(<span class="at">datatable.showProgress =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb22-8"><a href="calibration-and-sensitity.html#cb22-8" tabindex="-1"></a>  <span class="co"># use input example files provided by the package</span></span>
-<span id="cb22-9"><a href="calibration-and-sensitity.html#cb22-9" tabindex="-1"></a>  base_url <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/&quot;</span></span>
-<span id="cb22-10"><a href="calibration-and-sensitity.html#cb22-10" tabindex="-1"></a>  input_rcn <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn.csv.gz&quot;</span>))</span>
-<span id="cb22-11"><a href="calibration-and-sensitity.html#cb22-11" tabindex="-1"></a>  input_climate <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;climate.csv.gz&quot;</span>))</span>
-<span id="cb22-12"><a href="calibration-and-sensitity.html#cb22-12" tabindex="-1"></a>  input_rcn_climate <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_climate.csv.gz&quot;</span>))</span>
-<span id="cb22-13"><a href="calibration-and-sensitity.html#cb22-13" tabindex="-1"></a>  input_rcn_gauging <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_gauging.csv.gz&quot;</span>))</span>
-<span id="cb22-14"><a href="calibration-and-sensitity.html#cb22-14" tabindex="-1"></a>  input_observed_flow <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;observed_flow.csv.gz&quot;</span>))</span>
-<span id="cb22-15"><a href="calibration-and-sensitity.html#cb22-15" tabindex="-1"></a>  input_alpha_lyne_hollick <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;alpha_lyne_hollick.csv.gz&quot;</span>))</span>
-<span id="cb22-16"><a href="calibration-and-sensitity.html#cb22-16" tabindex="-1"></a>  <span class="co"># Simulation period</span></span>
-<span id="cb22-17"><a href="calibration-and-sensitity.html#cb22-17" tabindex="-1"></a>  simul_period <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2017</span>, <span class="dv">2017</span>)</span>
-<span id="cb22-18"><a href="calibration-and-sensitity.html#cb22-18" tabindex="-1"></a></span>
-<span id="cb22-19"><a href="calibration-and-sensitity.html#cb22-19" tabindex="-1"></a>  hydrobudget_eval <span class="ot">&lt;-</span> <span class="cf">function</span>(i) {</span>
-<span id="cb22-20"><a href="calibration-and-sensitity.html#cb22-20" tabindex="-1"></a>    <span class="co"># Calibration parameters</span></span>
-<span id="cb22-21"><a href="calibration-and-sensitity.html#cb22-21" tabindex="-1"></a>    HB <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">new_hydrobugdet</span>(</span>
-<span id="cb22-22"><a href="calibration-and-sensitity.html#cb22-22" tabindex="-1"></a>      <span class="at">T_m =</span> x[i, <span class="dv">1</span>],</span>
-<span id="cb22-23"><a href="calibration-and-sensitity.html#cb22-23" tabindex="-1"></a>      <span class="co"># melting temperature (°C)</span></span>
-<span id="cb22-24"><a href="calibration-and-sensitity.html#cb22-24" tabindex="-1"></a>      <span class="at">C_m =</span> x[i, <span class="dv">2</span>],</span>
-<span id="cb22-25"><a href="calibration-and-sensitity.html#cb22-25" tabindex="-1"></a>      <span class="co"># melting coefficient (mm/°C/d)</span></span>
-<span id="cb22-26"><a href="calibration-and-sensitity.html#cb22-26" tabindex="-1"></a>      <span class="at">TT_F =</span> x[i, <span class="dv">3</span>],</span>
-<span id="cb22-27"><a href="calibration-and-sensitity.html#cb22-27" tabindex="-1"></a>      <span class="co"># Threshold temperature for soil frost (°C)</span></span>
-<span id="cb22-28"><a href="calibration-and-sensitity.html#cb22-28" tabindex="-1"></a>      <span class="at">F_T =</span> x[i, <span class="dv">4</span>],</span>
-<span id="cb22-29"><a href="calibration-and-sensitity.html#cb22-29" tabindex="-1"></a>      <span class="co"># Freezing time (d)</span></span>
-<span id="cb22-30"><a href="calibration-and-sensitity.html#cb22-30" tabindex="-1"></a>      <span class="at">t_API =</span> x[i, <span class="dv">5</span>],</span>
-<span id="cb22-31"><a href="calibration-and-sensitity.html#cb22-31" tabindex="-1"></a>      <span class="co"># Antecedent precipitation index time (d)</span></span>
-<span id="cb22-32"><a href="calibration-and-sensitity.html#cb22-32" tabindex="-1"></a>      <span class="at">f_runoff =</span> x[i, <span class="dv">6</span>],</span>
-<span id="cb22-33"><a href="calibration-and-sensitity.html#cb22-33" tabindex="-1"></a>      <span class="co"># Runoff factor (-)</span></span>
-<span id="cb22-34"><a href="calibration-and-sensitity.html#cb22-34" tabindex="-1"></a>      <span class="at">sw_m =</span> x[i, <span class="dv">7</span>],</span>
-<span id="cb22-35"><a href="calibration-and-sensitity.html#cb22-35" tabindex="-1"></a>      <span class="co"># Maximum soil water content (mm)</span></span>
-<span id="cb22-36"><a href="calibration-and-sensitity.html#cb22-36" tabindex="-1"></a>      <span class="at">f_inf =</span> x[i, <span class="dv">8</span>] <span class="co"># infiltration factor (-)</span></span>
-<span id="cb22-37"><a href="calibration-and-sensitity.html#cb22-37" tabindex="-1"></a>    )</span>
-<span id="cb22-38"><a href="calibration-and-sensitity.html#cb22-38" tabindex="-1"></a>    <span class="co"># Input data specific settings</span></span>
-<span id="cb22-39"><a href="calibration-and-sensitity.html#cb22-39" tabindex="-1"></a>    HB<span class="sc">$</span>rcn_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb22-40"><a href="calibration-and-sensitity.html#cb22-40" tabindex="-1"></a>      <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
-<span id="cb22-41"><a href="calibration-and-sensitity.html#cb22-41" tabindex="-1"></a>      <span class="at">RCNII =</span> <span class="st">&quot;RCNII&quot;</span>,</span>
-<span id="cb22-42"><a href="calibration-and-sensitity.html#cb22-42" tabindex="-1"></a>      <span class="at">lon =</span> <span class="st">&quot;X_L93&quot;</span>,</span>
-<span id="cb22-43"><a href="calibration-and-sensitity.html#cb22-43" tabindex="-1"></a>      <span class="at">lat =</span> <span class="st">&quot;Y_L93&quot;</span></span>
-<span id="cb22-44"><a href="calibration-and-sensitity.html#cb22-44" tabindex="-1"></a>    )</span>
-<span id="cb22-45"><a href="calibration-and-sensitity.html#cb22-45" tabindex="-1"></a>    HB<span class="sc">$</span>climate_columns<span class="sc">$</span>climate_id <span class="ot">&lt;-</span> <span class="st">&quot;climate_cell&quot;</span></span>
-<span id="cb22-46"><a href="calibration-and-sensitity.html#cb22-46" tabindex="-1"></a>    HB<span class="sc">$</span>rcn_climate_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">climate_id =</span> <span class="st">&quot;climate_cell&quot;</span>,</span>
-<span id="cb22-47"><a href="calibration-and-sensitity.html#cb22-47" tabindex="-1"></a>                                   <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>)</span>
-<span id="cb22-48"><a href="calibration-and-sensitity.html#cb22-48" tabindex="-1"></a>    HB<span class="sc">$</span>rcn_gauging_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
-<span id="cb22-49"><a href="calibration-and-sensitity.html#cb22-49" tabindex="-1"></a>                                   <span class="at">station_id =</span> <span class="st">&quot;gauging_stat&quot;</span>)</span>
-<span id="cb22-50"><a href="calibration-and-sensitity.html#cb22-50" tabindex="-1"></a>    HB<span class="sc">$</span>alpha_lyne_hollick_columns<span class="sc">$</span>station_id <span class="ot">&lt;-</span> <span class="st">&quot;station&quot;</span></span>
-<span id="cb22-51"><a href="calibration-and-sensitity.html#cb22-51" tabindex="-1"></a></span>
-<span id="cb22-52"><a href="calibration-and-sensitity.html#cb22-52" tabindex="-1"></a>    <span class="co"># Simulation with the HydroBudget model</span></span>
-<span id="cb22-53"><a href="calibration-and-sensitity.html#cb22-53" tabindex="-1"></a>    rechaRge<span class="sc">::</span><span class="fu">with_verbose</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb22-54"><a href="calibration-and-sensitity.html#cb22-54" tabindex="-1"></a>    water_budget <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">compute_recharge</span>(</span>
-<span id="cb22-55"><a href="calibration-and-sensitity.html#cb22-55" tabindex="-1"></a>      HB,</span>
-<span id="cb22-56"><a href="calibration-and-sensitity.html#cb22-56" tabindex="-1"></a>      <span class="at">rcn =</span> input_rcn,</span>
-<span id="cb22-57"><a href="calibration-and-sensitity.html#cb22-57" tabindex="-1"></a>      <span class="at">climate =</span> input_climate,</span>
-<span id="cb22-58"><a href="calibration-and-sensitity.html#cb22-58" tabindex="-1"></a>      <span class="at">rcn_climate =</span> input_rcn_climate,</span>
-<span id="cb22-59"><a href="calibration-and-sensitity.html#cb22-59" tabindex="-1"></a>      <span class="at">period =</span> simul_period,</span>
-<span id="cb22-60"><a href="calibration-and-sensitity.html#cb22-60" tabindex="-1"></a>      <span class="at">workers =</span> <span class="dv">1</span> <span class="co"># do not parallelize, caRamel will do it</span></span>
-<span id="cb22-61"><a href="calibration-and-sensitity.html#cb22-61" tabindex="-1"></a>    )</span>
-<span id="cb22-62"><a href="calibration-and-sensitity.html#cb22-62" tabindex="-1"></a></span>
-<span id="cb22-63"><a href="calibration-and-sensitity.html#cb22-63" tabindex="-1"></a>    <span class="co"># Evaluate simulation quality</span></span>
-<span id="cb22-64"><a href="calibration-and-sensitity.html#cb22-64" tabindex="-1"></a>    quality <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">evaluate_simulation_quality</span>(</span>
-<span id="cb22-65"><a href="calibration-and-sensitity.html#cb22-65" tabindex="-1"></a>      HB,</span>
-<span id="cb22-66"><a href="calibration-and-sensitity.html#cb22-66" tabindex="-1"></a>      <span class="at">water_budget =</span> water_budget,</span>
-<span id="cb22-67"><a href="calibration-and-sensitity.html#cb22-67" tabindex="-1"></a>      <span class="at">rcn_gauging =</span> input_rcn_gauging,</span>
-<span id="cb22-68"><a href="calibration-and-sensitity.html#cb22-68" tabindex="-1"></a>      <span class="at">observed_flow =</span> input_observed_flow,</span>
-<span id="cb22-69"><a href="calibration-and-sensitity.html#cb22-69" tabindex="-1"></a>      <span class="at">alpha_lyne_hollick =</span> input_alpha_lyne_hollick,</span>
-<span id="cb22-70"><a href="calibration-and-sensitity.html#cb22-70" tabindex="-1"></a>      <span class="at">period =</span> simul_period</span>
-<span id="cb22-71"><a href="calibration-and-sensitity.html#cb22-71" tabindex="-1"></a>    )</span>
-<span id="cb22-72"><a href="calibration-and-sensitity.html#cb22-72" tabindex="-1"></a></span>
-<span id="cb22-73"><a href="calibration-and-sensitity.html#cb22-73" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">c</span>(</span>
-<span id="cb22-74"><a href="calibration-and-sensitity.html#cb22-74" tabindex="-1"></a>      <span class="fu">mean</span>(quality<span class="sc">$</span>simulation_metadata<span class="sc">$</span>KGE_qtot_cal),</span>
-<span id="cb22-75"><a href="calibration-and-sensitity.html#cb22-75" tabindex="-1"></a>      <span class="fu">mean</span>(quality<span class="sc">$</span>simulation_metadata<span class="sc">$</span>KGE_qbase_cal)</span>
-<span id="cb22-76"><a href="calibration-and-sensitity.html#cb22-76" tabindex="-1"></a>    ))</span>
-<span id="cb22-77"><a href="calibration-and-sensitity.html#cb22-77" tabindex="-1"></a>  }</span>
-<span id="cb22-78"><a href="calibration-and-sensitity.html#cb22-78" tabindex="-1"></a></span>
-<span id="cb22-79"><a href="calibration-and-sensitity.html#cb22-79" tabindex="-1"></a>  <span class="fu">return</span>(hydrobudget_eval)</span>
-<span id="cb22-80"><a href="calibration-and-sensitity.html#cb22-80" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="calibration-and-sensitity.html#cb27-1" tabindex="-1"></a>make_hydrobudget_eval <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb27-2"><a href="calibration-and-sensitity.html#cb27-2" tabindex="-1"></a>  <span class="co"># Preload input data</span></span>
+<span id="cb27-3"><a href="calibration-and-sensitity.html#cb27-3" tabindex="-1"></a>  <span class="co"># Quiet download</span></span>
+<span id="cb27-4"><a href="calibration-and-sensitity.html#cb27-4" tabindex="-1"></a>  <span class="fu">options</span>(<span class="at">datatable.showProgress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-5"><a href="calibration-and-sensitity.html#cb27-5" tabindex="-1"></a>  <span class="co"># use input example files provided by the package</span></span>
+<span id="cb27-6"><a href="calibration-and-sensitity.html#cb27-6" tabindex="-1"></a>  base_url <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/&quot;</span></span>
+<span id="cb27-7"><a href="calibration-and-sensitity.html#cb27-7" tabindex="-1"></a>  input_rcn <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn.csv.gz&quot;</span>))</span>
+<span id="cb27-8"><a href="calibration-and-sensitity.html#cb27-8" tabindex="-1"></a>  input_climate <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;climate.csv.gz&quot;</span>))</span>
+<span id="cb27-9"><a href="calibration-and-sensitity.html#cb27-9" tabindex="-1"></a>  input_rcn_climate <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_climate.csv.gz&quot;</span>))</span>
+<span id="cb27-10"><a href="calibration-and-sensitity.html#cb27-10" tabindex="-1"></a>  input_rcn_gauging <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;rcn_gauging.csv.gz&quot;</span>))</span>
+<span id="cb27-11"><a href="calibration-and-sensitity.html#cb27-11" tabindex="-1"></a>  input_observed_flow <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;observed_flow.csv.gz&quot;</span>))</span>
+<span id="cb27-12"><a href="calibration-and-sensitity.html#cb27-12" tabindex="-1"></a>  input_alpha_lyne_hollick <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="fu">paste0</span>(base_url, <span class="st">&quot;alpha_lyne_hollick.csv.gz&quot;</span>))</span>
+<span id="cb27-13"><a href="calibration-and-sensitity.html#cb27-13" tabindex="-1"></a>  <span class="co"># Simulation period</span></span>
+<span id="cb27-14"><a href="calibration-and-sensitity.html#cb27-14" tabindex="-1"></a>  simul_period <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2017</span>, <span class="dv">2017</span>)</span>
+<span id="cb27-15"><a href="calibration-and-sensitity.html#cb27-15" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="calibration-and-sensitity.html#cb27-16" tabindex="-1"></a>  hydrobudget_eval <span class="ot">&lt;-</span> <span class="cf">function</span>(i) {</span>
+<span id="cb27-17"><a href="calibration-and-sensitity.html#cb27-17" tabindex="-1"></a>    <span class="co"># Calibration parameters</span></span>
+<span id="cb27-18"><a href="calibration-and-sensitity.html#cb27-18" tabindex="-1"></a>    HB <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">new_hydrobugdet</span>(</span>
+<span id="cb27-19"><a href="calibration-and-sensitity.html#cb27-19" tabindex="-1"></a>      <span class="at">T_m =</span> x[i, <span class="dv">1</span>],</span>
+<span id="cb27-20"><a href="calibration-and-sensitity.html#cb27-20" tabindex="-1"></a>      <span class="co"># melting temperature (°C)</span></span>
+<span id="cb27-21"><a href="calibration-and-sensitity.html#cb27-21" tabindex="-1"></a>      <span class="at">C_m =</span> x[i, <span class="dv">2</span>],</span>
+<span id="cb27-22"><a href="calibration-and-sensitity.html#cb27-22" tabindex="-1"></a>      <span class="co"># melting coefficient (mm/°C/d)</span></span>
+<span id="cb27-23"><a href="calibration-and-sensitity.html#cb27-23" tabindex="-1"></a>      <span class="at">TT_F =</span> x[i, <span class="dv">3</span>],</span>
+<span id="cb27-24"><a href="calibration-and-sensitity.html#cb27-24" tabindex="-1"></a>      <span class="co"># Threshold temperature for soil frost (°C)</span></span>
+<span id="cb27-25"><a href="calibration-and-sensitity.html#cb27-25" tabindex="-1"></a>      <span class="at">F_T =</span> x[i, <span class="dv">4</span>],</span>
+<span id="cb27-26"><a href="calibration-and-sensitity.html#cb27-26" tabindex="-1"></a>      <span class="co"># Freezing time (d)</span></span>
+<span id="cb27-27"><a href="calibration-and-sensitity.html#cb27-27" tabindex="-1"></a>      <span class="at">t_API =</span> x[i, <span class="dv">5</span>],</span>
+<span id="cb27-28"><a href="calibration-and-sensitity.html#cb27-28" tabindex="-1"></a>      <span class="co"># Antecedent precipitation index time (d)</span></span>
+<span id="cb27-29"><a href="calibration-and-sensitity.html#cb27-29" tabindex="-1"></a>      <span class="at">f_runoff =</span> x[i, <span class="dv">6</span>],</span>
+<span id="cb27-30"><a href="calibration-and-sensitity.html#cb27-30" tabindex="-1"></a>      <span class="co"># Runoff factor (-)</span></span>
+<span id="cb27-31"><a href="calibration-and-sensitity.html#cb27-31" tabindex="-1"></a>      <span class="at">sw_m =</span> x[i, <span class="dv">7</span>],</span>
+<span id="cb27-32"><a href="calibration-and-sensitity.html#cb27-32" tabindex="-1"></a>      <span class="co"># Maximum soil water content (mm)</span></span>
+<span id="cb27-33"><a href="calibration-and-sensitity.html#cb27-33" tabindex="-1"></a>      <span class="at">f_inf =</span> x[i, <span class="dv">8</span>] <span class="co"># infiltration factor (-)</span></span>
+<span id="cb27-34"><a href="calibration-and-sensitity.html#cb27-34" tabindex="-1"></a>    )</span>
+<span id="cb27-35"><a href="calibration-and-sensitity.html#cb27-35" tabindex="-1"></a>    <span class="co"># Input data specific settings</span></span>
+<span id="cb27-36"><a href="calibration-and-sensitity.html#cb27-36" tabindex="-1"></a>    HB<span class="sc">$</span>rcn_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb27-37"><a href="calibration-and-sensitity.html#cb27-37" tabindex="-1"></a>      <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
+<span id="cb27-38"><a href="calibration-and-sensitity.html#cb27-38" tabindex="-1"></a>      <span class="at">RCNII =</span> <span class="st">&quot;RCNII&quot;</span>,</span>
+<span id="cb27-39"><a href="calibration-and-sensitity.html#cb27-39" tabindex="-1"></a>      <span class="at">lon =</span> <span class="st">&quot;X_L93&quot;</span>,</span>
+<span id="cb27-40"><a href="calibration-and-sensitity.html#cb27-40" tabindex="-1"></a>      <span class="at">lat =</span> <span class="st">&quot;Y_L93&quot;</span></span>
+<span id="cb27-41"><a href="calibration-and-sensitity.html#cb27-41" tabindex="-1"></a>    )</span>
+<span id="cb27-42"><a href="calibration-and-sensitity.html#cb27-42" tabindex="-1"></a>    HB<span class="sc">$</span>climate_columns<span class="sc">$</span>climate_id <span class="ot">&lt;-</span> <span class="st">&quot;climate_cell&quot;</span></span>
+<span id="cb27-43"><a href="calibration-and-sensitity.html#cb27-43" tabindex="-1"></a>    HB<span class="sc">$</span>rcn_climate_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">climate_id =</span> <span class="st">&quot;climate_cell&quot;</span>,</span>
+<span id="cb27-44"><a href="calibration-and-sensitity.html#cb27-44" tabindex="-1"></a>                                   <span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>)</span>
+<span id="cb27-45"><a href="calibration-and-sensitity.html#cb27-45" tabindex="-1"></a>    HB<span class="sc">$</span>rcn_gauging_columns <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">rcn_id =</span> <span class="st">&quot;cell_ID&quot;</span>,</span>
+<span id="cb27-46"><a href="calibration-and-sensitity.html#cb27-46" tabindex="-1"></a>                                   <span class="at">station_id =</span> <span class="st">&quot;gauging_stat&quot;</span>)</span>
+<span id="cb27-47"><a href="calibration-and-sensitity.html#cb27-47" tabindex="-1"></a>    HB<span class="sc">$</span>alpha_lyne_hollick_columns<span class="sc">$</span>station_id <span class="ot">&lt;-</span> <span class="st">&quot;station&quot;</span></span>
+<span id="cb27-48"><a href="calibration-and-sensitity.html#cb27-48" tabindex="-1"></a></span>
+<span id="cb27-49"><a href="calibration-and-sensitity.html#cb27-49" tabindex="-1"></a>    <span class="co"># Simulation with the HydroBudget model</span></span>
+<span id="cb27-50"><a href="calibration-and-sensitity.html#cb27-50" tabindex="-1"></a>    rechaRge<span class="sc">::</span><span class="fu">with_verbose</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb27-51"><a href="calibration-and-sensitity.html#cb27-51" tabindex="-1"></a>    water_budget <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">compute_recharge</span>(</span>
+<span id="cb27-52"><a href="calibration-and-sensitity.html#cb27-52" tabindex="-1"></a>      HB,</span>
+<span id="cb27-53"><a href="calibration-and-sensitity.html#cb27-53" tabindex="-1"></a>      <span class="at">rcn =</span> input_rcn,</span>
+<span id="cb27-54"><a href="calibration-and-sensitity.html#cb27-54" tabindex="-1"></a>      <span class="at">climate =</span> input_climate,</span>
+<span id="cb27-55"><a href="calibration-and-sensitity.html#cb27-55" tabindex="-1"></a>      <span class="at">rcn_climate =</span> input_rcn_climate,</span>
+<span id="cb27-56"><a href="calibration-and-sensitity.html#cb27-56" tabindex="-1"></a>      <span class="at">period =</span> simul_period,</span>
+<span id="cb27-57"><a href="calibration-and-sensitity.html#cb27-57" tabindex="-1"></a>      <span class="at">workers =</span> <span class="dv">1</span> <span class="co"># do not parallelize, caRamel will do it</span></span>
+<span id="cb27-58"><a href="calibration-and-sensitity.html#cb27-58" tabindex="-1"></a>    )</span>
+<span id="cb27-59"><a href="calibration-and-sensitity.html#cb27-59" tabindex="-1"></a></span>
+<span id="cb27-60"><a href="calibration-and-sensitity.html#cb27-60" tabindex="-1"></a>    <span class="co"># Evaluate simulation quality</span></span>
+<span id="cb27-61"><a href="calibration-and-sensitity.html#cb27-61" tabindex="-1"></a>    quality <span class="ot">&lt;-</span> rechaRge<span class="sc">::</span><span class="fu">evaluate_simulation_quality</span>(</span>
+<span id="cb27-62"><a href="calibration-and-sensitity.html#cb27-62" tabindex="-1"></a>      HB,</span>
+<span id="cb27-63"><a href="calibration-and-sensitity.html#cb27-63" tabindex="-1"></a>      <span class="at">water_budget =</span> water_budget,</span>
+<span id="cb27-64"><a href="calibration-and-sensitity.html#cb27-64" tabindex="-1"></a>      <span class="at">rcn_gauging =</span> input_rcn_gauging,</span>
+<span id="cb27-65"><a href="calibration-and-sensitity.html#cb27-65" tabindex="-1"></a>      <span class="at">observed_flow =</span> input_observed_flow,</span>
+<span id="cb27-66"><a href="calibration-and-sensitity.html#cb27-66" tabindex="-1"></a>      <span class="at">alpha_lyne_hollick =</span> input_alpha_lyne_hollick,</span>
+<span id="cb27-67"><a href="calibration-and-sensitity.html#cb27-67" tabindex="-1"></a>      <span class="at">period =</span> simul_period</span>
+<span id="cb27-68"><a href="calibration-and-sensitity.html#cb27-68" tabindex="-1"></a>    )</span>
+<span id="cb27-69"><a href="calibration-and-sensitity.html#cb27-69" tabindex="-1"></a></span>
+<span id="cb27-70"><a href="calibration-and-sensitity.html#cb27-70" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">c</span>(</span>
+<span id="cb27-71"><a href="calibration-and-sensitity.html#cb27-71" tabindex="-1"></a>      <span class="fu">mean</span>(quality<span class="sc">$</span>simulation_metadata<span class="sc">$</span>KGE_qtot_cal),</span>
+<span id="cb27-72"><a href="calibration-and-sensitity.html#cb27-72" tabindex="-1"></a>      <span class="fu">mean</span>(quality<span class="sc">$</span>simulation_metadata<span class="sc">$</span>KGE_qbase_cal)</span>
+<span id="cb27-73"><a href="calibration-and-sensitity.html#cb27-73" tabindex="-1"></a>    ))</span>
+<span id="cb27-74"><a href="calibration-and-sensitity.html#cb27-74" tabindex="-1"></a>  }</span>
+<span id="cb27-75"><a href="calibration-and-sensitity.html#cb27-75" tabindex="-1"></a></span>
+<span id="cb27-76"><a href="calibration-and-sensitity.html#cb27-76" tabindex="-1"></a>  <span class="fu">return</span>(hydrobudget_eval)</span>
+<span id="cb27-77"><a href="calibration-and-sensitity.html#cb27-77" tabindex="-1"></a>}</span></code></pre></div>
 </div>
-<div id="run-calibration" class="section level3 hasAnchor" number="3.3.2">
-<h3><span class="header-section-number">3.3.2</span> Run calibration<a href="calibration-and-sensitity.html#run-calibration" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="run-calibration-analysis" class="section level3 hasAnchor" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Run calibration analysis<a href="calibration-and-sensitity.html#run-calibration-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Then perform calibration with sensitivity:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="calibration-and-sensitity.html#cb23-1" tabindex="-1"></a><span class="fu">library</span>(caRamel)</span>
-<span id="cb23-2"><a href="calibration-and-sensitity.html#cb23-2" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="calibration-and-sensitity.html#cb23-3" tabindex="-1"></a><span class="co"># Number of objectives</span></span>
-<span id="cb23-4"><a href="calibration-and-sensitity.html#cb23-4" tabindex="-1"></a>nobj <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb23-5"><a href="calibration-and-sensitity.html#cb23-5" tabindex="-1"></a><span class="co"># Number of variables</span></span>
-<span id="cb23-6"><a href="calibration-and-sensitity.html#cb23-6" tabindex="-1"></a>nvar <span class="ot">&lt;-</span> <span class="dv">8</span></span>
-<span id="cb23-7"><a href="calibration-and-sensitity.html#cb23-7" tabindex="-1"></a><span class="co"># All the objectives are to be maximized</span></span>
-<span id="cb23-8"><a href="calibration-and-sensitity.html#cb23-8" tabindex="-1"></a>minmax <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>)</span>
-<span id="cb23-9"><a href="calibration-and-sensitity.html#cb23-9" tabindex="-1"></a><span class="co"># Ranges of the parameters</span></span>
-<span id="cb23-10"><a href="calibration-and-sensitity.html#cb23-10" tabindex="-1"></a>bounds <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> nvar, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb23-11"><a href="calibration-and-sensitity.html#cb23-11" tabindex="-1"></a>bounds[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">5</span>, <span class="fl">3.05</span>, <span class="fl">0.5</span>, <span class="dv">160</span>, <span class="fl">0.01</span>)</span>
-<span id="cb23-12"><a href="calibration-and-sensitity.html#cb23-12" tabindex="-1"></a>bounds[, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="fl">6.5</span>, <span class="sc">-</span><span class="dv">12</span>, <span class="dv">30</span>, <span class="fl">4.8</span>, <span class="fl">0.6</span>, <span class="dv">720</span>, <span class="fl">0.05</span>)</span>
-<span id="cb23-13"><a href="calibration-and-sensitity.html#cb23-13" tabindex="-1"></a></span>
-<span id="cb23-14"><a href="calibration-and-sensitity.html#cb23-14" tabindex="-1"></a>calibration_results <span class="ot">&lt;-</span> <span class="fu">caRamel</span>(</span>
-<span id="cb23-15"><a href="calibration-and-sensitity.html#cb23-15" tabindex="-1"></a>  <span class="at">nobj =</span> nobj,</span>
-<span id="cb23-16"><a href="calibration-and-sensitity.html#cb23-16" tabindex="-1"></a>  <span class="at">nvar =</span> nvar,</span>
-<span id="cb23-17"><a href="calibration-and-sensitity.html#cb23-17" tabindex="-1"></a>  <span class="at">minmax =</span>  minmax,</span>
-<span id="cb23-18"><a href="calibration-and-sensitity.html#cb23-18" tabindex="-1"></a>  <span class="at">bounds =</span> bounds,</span>
-<span id="cb23-19"><a href="calibration-and-sensitity.html#cb23-19" tabindex="-1"></a>  <span class="at">func =</span> <span class="fu">make_hydrobudget_eval</span>(),</span>
-<span id="cb23-20"><a href="calibration-and-sensitity.html#cb23-20" tabindex="-1"></a>  <span class="at">prec =</span> <span class="fu">matrix</span>(<span class="fl">0.01</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> nobj),</span>
-<span id="cb23-21"><a href="calibration-and-sensitity.html#cb23-21" tabindex="-1"></a>  <span class="at">sensitivity =</span> <span class="cn">FALSE</span>, <span class="co"># you can include sensitivity analysis</span></span>
-<span id="cb23-22"><a href="calibration-and-sensitity.html#cb23-22" tabindex="-1"></a>  <span class="at">archsize =</span> <span class="dv">100</span>,<span class="co"># adjust to relevant value</span></span>
-<span id="cb23-23"><a href="calibration-and-sensitity.html#cb23-23" tabindex="-1"></a>  <span class="at">popsize =</span> <span class="dv">10</span>,  <span class="co"># adjust to relevant value</span></span>
-<span id="cb23-24"><a href="calibration-and-sensitity.html#cb23-24" tabindex="-1"></a>  <span class="at">maxrun =</span> <span class="dv">10</span>,   <span class="co"># adjust to relevant value</span></span>
-<span id="cb23-25"><a href="calibration-and-sensitity.html#cb23-25" tabindex="-1"></a>  <span class="at">carallel =</span> <span class="dv">1</span>, <span class="co"># do parallel ...</span></span>
-<span id="cb23-26"><a href="calibration-and-sensitity.html#cb23-26" tabindex="-1"></a>  <span class="at">numcores =</span> <span class="dv">2</span>  <span class="co"># ... on 2 cores</span></span>
-<span id="cb23-27"><a href="calibration-and-sensitity.html#cb23-27" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="calibration-and-sensitity.html#cb28-1" tabindex="-1"></a><span class="fu">library</span>(caRamel)</span>
+<span id="cb28-2"><a href="calibration-and-sensitity.html#cb28-2" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="calibration-and-sensitity.html#cb28-3" tabindex="-1"></a><span class="co"># Number of objectives</span></span>
+<span id="cb28-4"><a href="calibration-and-sensitity.html#cb28-4" tabindex="-1"></a>nobj <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb28-5"><a href="calibration-and-sensitity.html#cb28-5" tabindex="-1"></a><span class="co"># Number of variables</span></span>
+<span id="cb28-6"><a href="calibration-and-sensitity.html#cb28-6" tabindex="-1"></a>nvar <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb28-7"><a href="calibration-and-sensitity.html#cb28-7" tabindex="-1"></a><span class="co"># All the objectives are to be maximized</span></span>
+<span id="cb28-8"><a href="calibration-and-sensitity.html#cb28-8" tabindex="-1"></a>minmax <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb28-9"><a href="calibration-and-sensitity.html#cb28-9" tabindex="-1"></a><span class="co"># Ranges of the parameters</span></span>
+<span id="cb28-10"><a href="calibration-and-sensitity.html#cb28-10" tabindex="-1"></a>bounds <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> nvar, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb28-11"><a href="calibration-and-sensitity.html#cb28-11" tabindex="-1"></a>bounds[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">5</span>, <span class="fl">3.05</span>, <span class="fl">0.5</span>, <span class="dv">160</span>, <span class="fl">0.01</span>)</span>
+<span id="cb28-12"><a href="calibration-and-sensitity.html#cb28-12" tabindex="-1"></a>bounds[, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="fl">6.5</span>, <span class="sc">-</span><span class="dv">12</span>, <span class="dv">30</span>, <span class="fl">4.8</span>, <span class="fl">0.6</span>, <span class="dv">720</span>, <span class="fl">0.05</span>)</span>
+<span id="cb28-13"><a href="calibration-and-sensitity.html#cb28-13" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="calibration-and-sensitity.html#cb28-14" tabindex="-1"></a>calibration_results <span class="ot">&lt;-</span> <span class="fu">caRamel</span>(</span>
+<span id="cb28-15"><a href="calibration-and-sensitity.html#cb28-15" tabindex="-1"></a>  <span class="at">nobj =</span> nobj,</span>
+<span id="cb28-16"><a href="calibration-and-sensitity.html#cb28-16" tabindex="-1"></a>  <span class="at">nvar =</span> nvar,</span>
+<span id="cb28-17"><a href="calibration-and-sensitity.html#cb28-17" tabindex="-1"></a>  <span class="at">minmax =</span>  minmax,</span>
+<span id="cb28-18"><a href="calibration-and-sensitity.html#cb28-18" tabindex="-1"></a>  <span class="at">bounds =</span> bounds,</span>
+<span id="cb28-19"><a href="calibration-and-sensitity.html#cb28-19" tabindex="-1"></a>  <span class="at">func =</span> <span class="fu">make_hydrobudget_eval</span>(),</span>
+<span id="cb28-20"><a href="calibration-and-sensitity.html#cb28-20" tabindex="-1"></a>  <span class="at">prec =</span> <span class="fu">matrix</span>(<span class="fl">0.01</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> nobj),</span>
+<span id="cb28-21"><a href="calibration-and-sensitity.html#cb28-21" tabindex="-1"></a>  <span class="at">sensitivity =</span> <span class="cn">FALSE</span>, <span class="co"># you can include sensitivity analysis</span></span>
+<span id="cb28-22"><a href="calibration-and-sensitity.html#cb28-22" tabindex="-1"></a>  <span class="at">archsize =</span> <span class="dv">100</span>,<span class="co"># adjust to relevant value</span></span>
+<span id="cb28-23"><a href="calibration-and-sensitity.html#cb28-23" tabindex="-1"></a>  <span class="at">popsize =</span> <span class="dv">10</span>,  <span class="co"># adjust to relevant value</span></span>
+<span id="cb28-24"><a href="calibration-and-sensitity.html#cb28-24" tabindex="-1"></a>  <span class="at">maxrun =</span> <span class="dv">10</span>,   <span class="co"># adjust to relevant value</span></span>
+<span id="cb28-25"><a href="calibration-and-sensitity.html#cb28-25" tabindex="-1"></a>  <span class="at">carallel =</span> <span class="dv">1</span>, <span class="co"># do parallel ...</span></span>
+<span id="cb28-26"><a href="calibration-and-sensitity.html#cb28-26" tabindex="-1"></a>  <span class="at">numcores =</span> <span class="dv">2</span>  <span class="co"># ... on 2 cores</span></span>
+<span id="cb28-27"><a href="calibration-and-sensitity.html#cb28-27" tabindex="-1"></a>)</span></code></pre></div>
 </div>
-<div id="analyse-calibration-results" class="section level3 hasAnchor" number="3.3.3">
-<h3><span class="header-section-number">3.3.3</span> Analyse calibration results<a href="calibration-and-sensitity.html#analyse-calibration-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="handle-calibration-results" class="section level3 hasAnchor" number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> Handle calibration results<a href="calibration-and-sensitity.html#handle-calibration-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="calibration-and-sensitity.html#cb24-1" tabindex="-1"></a>output_front <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">data.table</span>(<span class="fu">cbind</span>(calibration_results<span class="sc">$</span>parameters, calibration_results<span class="sc">$</span>objectives))</span>
-<span id="cb24-2"><a href="calibration-and-sensitity.html#cb24-2" tabindex="-1"></a><span class="fu">colnames</span>(output_front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;T_m&quot;</span>, <span class="st">&quot;C_m&quot;</span>, <span class="st">&quot;TT_F&quot;</span>, <span class="st">&quot;F_T&quot;</span>, <span class="st">&quot;t_API&quot;</span>, <span class="st">&quot;f_runoff&quot;</span>, <span class="st">&quot;sw_m&quot;</span>, <span class="st">&quot;f_inf&quot;</span>, <span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="calibration-and-sensitity.html#cb29-1" tabindex="-1"></a>output_front <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">data.table</span>(<span class="fu">cbind</span>(calibration_results<span class="sc">$</span>parameters, calibration_results<span class="sc">$</span>objectives))</span>
+<span id="cb29-2"><a href="calibration-and-sensitity.html#cb29-2" tabindex="-1"></a><span class="fu">colnames</span>(output_front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;T_m&quot;</span>, <span class="st">&quot;C_m&quot;</span>, <span class="st">&quot;TT_F&quot;</span>, <span class="st">&quot;F_T&quot;</span>, <span class="st">&quot;t_API&quot;</span>, <span class="st">&quot;f_runoff&quot;</span>, <span class="st">&quot;sw_m&quot;</span>, <span class="st">&quot;f_inf&quot;</span>, <span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span></code></pre></div>
 <table>
 <colgroup>
 <col width="9%" />
 <col width="9%" />
 <col width="10%" />
-<col width="9%" />
-<col width="9%" />
 <col width="10%" />
+<col width="9%" />
+<col width="9%" />
 <col width="9%" />
 <col width="10%" />
 <col width="10%" />
@@ -407,51 +623,63 @@ $KGE_qbase_cal_mean
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">1.749406</td>
-<td align="right">4.411280</td>
-<td align="right">-16.73406</td>
-<td align="right">20.84359</td>
-<td align="right">3.841954</td>
-<td align="right">0.5987685</td>
-<td align="right">270.2162</td>
-<td align="right">0.0170943</td>
-<td align="right">0.5634289</td>
-<td align="right">0.5863492</td>
+<td align="right">2.254748</td>
+<td align="right">4.308423</td>
+<td align="right">-14.12520</td>
+<td align="right">11.711683</td>
+<td align="right">3.476936</td>
+<td align="right">0.531836</td>
+<td align="right">259.4201</td>
+<td align="right">0.0404605</td>
+<td align="right">0.6465410</td>
+<td align="right">0.5990976</td>
 </tr>
 <tr class="even">
-<td align="right">1.334207</td>
-<td align="right">5.094525</td>
-<td align="right">-12.83786</td>
-<td align="right">29.39715</td>
-<td align="right">3.471974</td>
-<td align="right">0.5368869</td>
-<td align="right">276.6130</td>
-<td align="right">0.0234676</td>
-<td align="right">0.5333744</td>
-<td align="right">0.7449479</td>
+<td align="right">1.098950</td>
+<td align="right">4.021552</td>
+<td align="right">-18.82435</td>
+<td align="right">27.333958</td>
+<td align="right">3.599702</td>
+<td align="right">0.593452</td>
+<td align="right">256.5890</td>
+<td align="right">0.0485772</td>
+<td align="right">0.6206263</td>
+<td align="right">0.6901654</td>
+</tr>
+<tr class="odd">
+<td align="right">1.848664</td>
+<td align="right">6.390459</td>
+<td align="right">-16.21821</td>
+<td align="right">8.778428</td>
+<td align="right">3.089753</td>
+<td align="right">0.519164</td>
+<td align="right">405.5801</td>
+<td align="right">0.0433969</td>
+<td align="right">0.4614259</td>
+<td align="right">0.7369588</td>
 </tr>
 </tbody>
 </table>
 <p>Display the results with <code>caRamel</code>’s plotting feature:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="calibration-and-sensitity.html#cb25-1" tabindex="-1"></a><span class="co"># Plot using caRamel</span></span>
-<span id="cb25-2"><a href="calibration-and-sensitity.html#cb25-2" tabindex="-1"></a><span class="fu">plot_caramel</span>(calibration_results, <span class="at">objnames =</span> <span class="fu">c</span>(<span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>))</span></code></pre></div>
-<p><img src="fig/unnamed-chunk-25-1.png" width="672" /></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="calibration-and-sensitity.html#cb30-1" tabindex="-1"></a><span class="co"># Plot using caRamel</span></span>
+<span id="cb30-2"><a href="calibration-and-sensitity.html#cb30-2" tabindex="-1"></a><span class="fu">plot_caramel</span>(calibration_results, <span class="at">objnames =</span> <span class="fu">c</span>(<span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>))</span></code></pre></div>
+<p><img src="fig/unnamed-chunk-30-1.png" width="672" /></p>
 <p>Scatter plot the calibration’s simulations, with the resulting <a href="https://en.wikipedia.org/wiki/Pareto_front">Pareto front</a>:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="calibration-and-sensitity.html#cb26-1" tabindex="-1"></a><span class="co"># Plot all using ggplot</span></span>
-<span id="cb26-2"><a href="calibration-and-sensitity.html#cb26-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb26-3"><a href="calibration-and-sensitity.html#cb26-3" tabindex="-1"></a>front <span class="ot">&lt;-</span> <span class="fu">data.table</span>(calibration_results<span class="sc">$</span>objectives)</span>
-<span id="cb26-4"><a href="calibration-and-sensitity.html#cb26-4" tabindex="-1"></a><span class="fu">colnames</span>(front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span>
-<span id="cb26-5"><a href="calibration-and-sensitity.html#cb26-5" tabindex="-1"></a>all <span class="ot">&lt;-</span> <span class="fu">data.table</span>(calibration_results<span class="sc">$</span>total_pop[, <span class="dv">9</span><span class="sc">:</span><span class="dv">10</span>])</span>
-<span id="cb26-6"><a href="calibration-and-sensitity.html#cb26-6" tabindex="-1"></a><span class="fu">colnames</span>(all) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span>
-<span id="cb26-7"><a href="calibration-and-sensitity.html#cb26-7" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all, front)</span>
-<span id="cb26-8"><a href="calibration-and-sensitity.html#cb26-8" tabindex="-1"></a>combined_data<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;All&quot;</span>, <span class="fu">nrow</span>(all)), <span class="fu">rep</span>(<span class="st">&quot;Front&quot;</span>, <span class="fu">nrow</span>(front)))</span>
-<span id="cb26-9"><a href="calibration-and-sensitity.html#cb26-9" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> KGE_qtot, <span class="at">y =</span> KGE_qbase, <span class="at">color =</span> group)) <span class="sc">+</span></span>
-<span id="cb26-10"><a href="calibration-and-sensitity.html#cb26-10" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb26-11"><a href="calibration-and-sensitity.html#cb26-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Scatter plot of simulations&quot;</span>,</span>
-<span id="cb26-12"><a href="calibration-and-sensitity.html#cb26-12" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;KGE_qtot&quot;</span>, <span class="at">y =</span> <span class="st">&quot;KGE_qbase&quot;</span>,</span>
-<span id="cb26-13"><a href="calibration-and-sensitity.html#cb26-13" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Dataset&quot;</span>) <span class="sc">+</span></span>
-<span id="cb26-14"><a href="calibration-and-sensitity.html#cb26-14" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
-<p><img src="fig/unnamed-chunk-26-1.png" width="672" /></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="calibration-and-sensitity.html#cb31-1" tabindex="-1"></a><span class="co"># Plot all using ggplot</span></span>
+<span id="cb31-2"><a href="calibration-and-sensitity.html#cb31-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb31-3"><a href="calibration-and-sensitity.html#cb31-3" tabindex="-1"></a>front <span class="ot">&lt;-</span> <span class="fu">data.table</span>(calibration_results<span class="sc">$</span>objectives)</span>
+<span id="cb31-4"><a href="calibration-and-sensitity.html#cb31-4" tabindex="-1"></a><span class="fu">colnames</span>(front) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span>
+<span id="cb31-5"><a href="calibration-and-sensitity.html#cb31-5" tabindex="-1"></a>all <span class="ot">&lt;-</span> <span class="fu">data.table</span>(calibration_results<span class="sc">$</span>total_pop[, <span class="dv">9</span><span class="sc">:</span><span class="dv">10</span>])</span>
+<span id="cb31-6"><a href="calibration-and-sensitity.html#cb31-6" tabindex="-1"></a><span class="fu">colnames</span>(all) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;KGE_qtot&quot;</span>, <span class="st">&quot;KGE_qbase&quot;</span>)</span>
+<span id="cb31-7"><a href="calibration-and-sensitity.html#cb31-7" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all, front)</span>
+<span id="cb31-8"><a href="calibration-and-sensitity.html#cb31-8" tabindex="-1"></a>combined_data<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;All&quot;</span>, <span class="fu">nrow</span>(all)), <span class="fu">rep</span>(<span class="st">&quot;Front&quot;</span>, <span class="fu">nrow</span>(front)))</span>
+<span id="cb31-9"><a href="calibration-and-sensitity.html#cb31-9" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> KGE_qtot, <span class="at">y =</span> KGE_qbase, <span class="at">color =</span> group)) <span class="sc">+</span></span>
+<span id="cb31-10"><a href="calibration-and-sensitity.html#cb31-10" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb31-11"><a href="calibration-and-sensitity.html#cb31-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Scatter plot of simulations&quot;</span>,</span>
+<span id="cb31-12"><a href="calibration-and-sensitity.html#cb31-12" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;KGE_qtot&quot;</span>, <span class="at">y =</span> <span class="st">&quot;KGE_qbase&quot;</span>,</span>
+<span id="cb31-13"><a href="calibration-and-sensitity.html#cb31-13" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Dataset&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-14"><a href="calibration-and-sensitity.html#cb31-14" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="fig/unnamed-chunk-31-1.png" width="672" /></p>
 
 </div>
 </div>
