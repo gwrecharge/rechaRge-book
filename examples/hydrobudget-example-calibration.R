@@ -145,3 +145,100 @@ ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
        color = "Dataset") +
   theme_minimal()
 
+
+#
+# Use all front parameters in simulations
+#
+
+# for each proposed set of parameters, run the water budget simulation
+param_ids <- as.numeric(rownames(output_front))
+
+# preload input data sets
+library(data.table)
+base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
+input_rcn <- fread(paste0(base_url, "rcn.csv.gz")) # RCN values per RCN cell ID
+input_climate <- fread(paste0(base_url, "climate.csv.gz")) # precipitation total in mm/d per climate cell ID
+input_rcn_climate <- fread(paste0(base_url, "rcn_climate.csv.gz")) # relation between climate and RCN cell IDs
+# Simulation period
+simul_period <- c(2016, 2017)
+
+# run simulations
+water_budgets <- lapply(param_ids, FUN = function(i) {
+  print(output_front[i,])
+  x <- output_front
+  HB <- rechaRge::new_hydrobudget(
+    T_m = as.numeric(x[i, 1]),
+    C_m = as.numeric(x[i, 2]),
+    TT_F = as.numeric(x[i, 3]),
+    F_T = as.numeric(x[i, 4]),
+    t_API = as.numeric(x[i, 5]),
+    f_runoff = as.numeric(x[i, 6]),
+    sw_m = as.numeric(x[i, 7]),
+    f_inf = as.numeric(x[i, 8])
+  )
+  # Input data specific settings
+  HB$rcn_columns <- list(
+    rcn_id = "cell_ID",
+    RCNII = "RCNII",
+    lon = "X_L93",
+    lat = "Y_L93"
+  )
+  HB$climate_columns$climate_id <- "climate_cell"
+  HB$rcn_climate_columns <- list(climate_id = "climate_cell",
+                                 rcn_id = "cell_ID")
+
+  # Simulation with the HydroBudget model
+  rechaRge::with_verbose(TRUE)
+  rechaRge::with_progress(TRUE)
+  water_budget <- rechaRge::compute_recharge(
+    HB,
+    rcn = input_rcn,
+    climate = input_climate,
+    rcn_climate = input_rcn_climate,
+    period = simul_period,
+    workers = 2
+  )
+})
+
+# make one row per year-month and one column per simulated measure
+plot_metric <- function(water_budgets, metric, title = NULL) {
+  # spatialized: add metric values starting from best fit
+  metrics <- data.table(year = water_budgets[[1]]$year,
+                        month = water_budgets[[1]]$month)
+  for (i in param_ids) {
+    param_id <- paste0(metric, i)
+    set(metrics, j = param_id, value = water_budgets[[i]][[metric]])
+  }
+
+  # non-spatialized: calculate mean, group by year-month
+  metrics_monthly <- unique(metrics, by = c("year", "month"))[, c("year", "month")]
+  for (i in param_ids) {
+    param_id <- paste0(metric, i)
+    metrics_id <- metrics[ , .(mean = mean(get(param_id))), by = c("year", "month")]
+    set(metrics_monthly, j = param_id, value = metrics_id$mean)
+  }
+  # add mean and sd for each year-month row
+  ym_cols <- c("year", "month")
+  set(metrics_monthly, j = "mean", value = apply(metrics_monthly[, !..ym_cols], 1, mean))
+  set(metrics_monthly, j = "sd", value = apply(metrics_monthly[, !..ym_cols], 1, sd))
+  set(metrics_monthly, j = "date", value = as.POSIXct(paste(metrics_monthly$year, metrics_monthly$month, "1", sep="-")))
+  set(metrics_monthly, j = "min", value = metrics_monthly$mean - metrics_monthly$sd)
+  set(metrics_monthly, j = "max", value = metrics_monthly$mean + metrics_monthly$sd)
+  colnames(metrics_monthly)[[3]] <- "best"
+
+  # plot uncertainty
+  ggplot(data = metrics_monthly, aes(x = date)) +
+    geom_ribbon(aes(ymin = min, ymax = max), fill = "gray", alpha = 0.4) +
+    geom_line(aes(y = best, color = "best")) +
+    geom_line(aes(y = mean, color = "mean")) +
+    labs(title = title, color = metric, x = "date", y = metric) +
+    scale_color_manual(values = c(best = "red", mean = "cyan")) +
+    scale_x_datetime(date_labels = "%Y-%m", breaks = date_breaks("months")) +
+    theme(axis.text.x = element_text(angle = 90), legend.position = "top")
+}
+plot_metric(water_budgets, "vi", title = "Simulations: vertical inflow")
+plot_metric(water_budgets, "gwr", title = "Simulations: groundwater recharge")
+plot_metric(water_budgets, "aet", title = "Simulations: actual evapotranspiration")
+plot_metric(water_budgets, "runoff", title = "Simulations: runoff")
+plot_metric(water_budgets, "runoff_2", title = "Simulations: runoff (2)")
+
