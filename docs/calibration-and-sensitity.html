@@ -400,68 +400,68 @@ $KGE_qbase_cal_mean
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.1271374</td>
-<td align="right">-0.0776245</td>
-<td align="right">0.1271374</td>
-<td align="right">0.0776245</td>
-<td align="right">0.0147986</td>
-<td align="right">0.0121139</td>
+<td align="right">0.0778685</td>
+<td align="right">-0.0604466</td>
+<td align="right">0.0778685</td>
+<td align="right">0.0604466</td>
+<td align="right">0.0073937</td>
+<td align="right">0.0593627</td>
 </tr>
 <tr class="even">
-<td align="right">0.0037533</td>
-<td align="right">0.0043198</td>
-<td align="right">0.0037533</td>
-<td align="right">0.0194115</td>
-<td align="right">0.0043173</td>
-<td align="right">0.0274520</td>
+<td align="right">-0.0531620</td>
+<td align="right">0.0456703</td>
+<td align="right">0.0531620</td>
+<td align="right">0.0593913</td>
+<td align="right">0.0115076</td>
+<td align="right">0.0839919</td>
 </tr>
 <tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
+<td align="right">-0.0003949</td>
+<td align="right">-0.0044714</td>
+<td align="right">0.0003949</td>
+<td align="right">0.0044714</td>
+<td align="right">0.0005585</td>
+<td align="right">0.0063235</td>
 </tr>
 <tr class="even">
-<td align="right">0.0007921</td>
-<td align="right">0.0007088</td>
-<td align="right">0.0007921</td>
-<td align="right">0.0007088</td>
-<td align="right">0.0011202</td>
-<td align="right">0.0010024</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
-<td align="right">0.0090519</td>
-<td align="right">0.0512783</td>
-<td align="right">0.0090519</td>
-<td align="right">0.0512783</td>
-<td align="right">0.0012585</td>
-<td align="right">0.0297831</td>
+<td align="right">0.0154742</td>
+<td align="right">-0.0175268</td>
+<td align="right">0.0154742</td>
+<td align="right">0.0175268</td>
+<td align="right">0.0041135</td>
+<td align="right">0.0015012</td>
 </tr>
 <tr class="even">
-<td align="right">0.0331000</td>
-<td align="right">0.0583827</td>
-<td align="right">0.0331000</td>
-<td align="right">0.1792538</td>
-<td align="right">0.0075468</td>
-<td align="right">0.2535031</td>
+<td align="right">0.0475064</td>
+<td align="right">-0.1101539</td>
+<td align="right">0.0475064</td>
+<td align="right">0.1101539</td>
+<td align="right">0.0179669</td>
+<td align="right">0.0351856</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.2619223</td>
-<td align="right">-0.1866707</td>
-<td align="right">0.2619223</td>
-<td align="right">0.3758074</td>
-<td align="right">0.0081699</td>
-<td align="right">0.5314719</td>
+<td align="right">-0.3996683</td>
+<td align="right">-0.6300180</td>
+<td align="right">0.3996683</td>
+<td align="right">0.6300180</td>
+<td align="right">0.1990187</td>
+<td align="right">0.1328317</td>
 </tr>
 <tr class="even">
-<td align="right">0.0837296</td>
-<td align="right">0.4339268</td>
-<td align="right">0.0837296</td>
-<td align="right">0.4339268</td>
-<td align="right">0.0024760</td>
-<td align="right">0.2177437</td>
+<td align="right">0.1295731</td>
+<td align="right">0.6734605</td>
+<td align="right">0.1295731</td>
+<td align="right">0.6734605</td>
+<td align="right">0.0137791</td>
+<td align="right">0.2675614</td>
 </tr>
 </tbody>
 </table>
@@ -598,12 +598,12 @@ $KGE_qbase_cal_mean
 <span id="cb29-3"><a href="calibration-and-sensitity.html#cb29-3" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fl">0.6</span> <span class="co"># choose your KGE weight criteria</span></span>
 <span id="cb29-4"><a href="calibration-and-sensitity.html#cb29-4" tabindex="-1"></a>output_front[, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">KGE_score =</span> (KGE_qtot <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> y) <span class="sc">+</span> KGE_qbase <span class="sc">*</span> y))]</span>
 <span id="cb29-5"><a href="calibration-and-sensitity.html#cb29-5" tabindex="-1"></a>output_front <span class="ot">&lt;-</span> output_front[<span class="fu">order</span>(KGE_score, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span></code></pre></div>
-<table style="width:100%;">
+<table>
 <colgroup>
 <col width="8%" />
 <col width="8%" />
 <col width="9%" />
-<col width="9%" />
+<col width="8%" />
 <col width="8%" />
 <col width="9%" />
 <col width="8%" />
@@ -629,43 +629,30 @@ $KGE_qbase_cal_mean
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">1.062537</td>
-<td align="right">5.908468</td>
-<td align="right">-19.13296</td>
-<td align="right">8.184337</td>
-<td align="right">4.296274</td>
-<td align="right">0.5859020</td>
-<td align="right">198.4807</td>
-<td align="right">0.0344930</td>
-<td align="right">0.5808249</td>
-<td align="right">0.8195682</td>
-<td align="right">0.7240708</td>
+<td align="right">1.582466</td>
+<td align="right">5.729937</td>
+<td align="right">-19.49674</td>
+<td align="right">26.98782</td>
+<td align="right">3.419989</td>
+<td align="right">0.5322689</td>
+<td align="right">182.8719</td>
+<td align="right">0.0228539</td>
+<td align="right">0.6394902</td>
+<td align="right">0.7301476</td>
+<td align="right">0.6938846</td>
 </tr>
 <tr class="even">
-<td align="right">1.356833</td>
-<td align="right">5.675937</td>
-<td align="right">-15.90141</td>
-<td align="right">27.540307</td>
-<td align="right">4.382608</td>
-<td align="right">0.5988047</td>
-<td align="right">170.1101</td>
-<td align="right">0.0468904</td>
-<td align="right">0.6601983</td>
-<td align="right">0.7587173</td>
-<td align="right">0.7193097</td>
-</tr>
-<tr class="odd">
-<td align="right">1.936405</td>
-<td align="right">4.755347</td>
-<td align="right">-12.18015</td>
-<td align="right">9.067619</td>
-<td align="right">4.026761</td>
-<td align="right">0.5759364</td>
-<td align="right">334.7605</td>
-<td align="right">0.0454335</td>
-<td align="right">0.5876917</td>
-<td align="right">0.7803558</td>
-<td align="right">0.7032902</td>
+<td align="right">2.323715</td>
+<td align="right">4.498876</td>
+<td align="right">-15.32375</td>
+<td align="right">17.52548</td>
+<td align="right">4.021084</td>
+<td align="right">0.5599587</td>
+<td align="right">185.3178</td>
+<td align="right">0.0390047</td>
+<td align="right">0.7240221</td>
+<td align="right">0.6630642</td>
+<td align="right">0.6874473</td>
 </tr>
 </tbody>
 </table>

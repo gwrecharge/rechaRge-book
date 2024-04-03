@@ -158,13 +158,7 @@ This book provides users with some common workflows for performing groundwater r
 
 \textbf{HydroBudget} (HB) is a spatially distributed groundwater recharge (GWR) model that computes a superficial water budget on grid cells of regional-scale watersheds with outputs aggregated into monthly time steps and with limited computational time. The model is open-source and was coded in R. This \texttt{rechaRge} R package is the result of the effort to make this code reusable and extensible.
 
-This book is organized into three parts. In the \emph{Introduction}, we provide practical information about the \texttt{rechaRge} R package.
-
-The \emph{Simulation} part focuses on the \textbf{HydroBudget} model that comes with the R package, and how make use the \texttt{rechaRge}functions to run simulations, then save and visualize the results.
-
-The \emph{Calibration and Sensitivity} part explores the usage of the \texttt{sensitivity} and of the \texttt{caRamel} R packages to find and evaluate the ``best'' sets of model parameters.
-
-Finally, the \emph{Extensibility} highlights how the generic functions of the \texttt{rechaRge} R package can applied to a different groundwater recharge model.
+This book is organized into three parts. In the \emph{Introduction}, we provide practical information about the \texttt{rechaRge} R package. The \emph{Simulation} part focuses on the \textbf{HydroBudget} model that comes with the R package, and how to use the \texttt{rechaRge}functions to run simulations, then save and visualize the results. The \emph{Calibration and Sensitivity} part explores the usage of the \texttt{sensitivity} and of the \texttt{caRamel} R packages to find and evaluate the ``best'' sets of model parameters. Finally, the \emph{Extensibility} section highlights how the generic functions of the \texttt{rechaRge} R package can be applied to a different groundwater recharge model.
 
 \hypertarget{intro}{%
 \chapter{Introduction}\label{intro}}
@@ -710,21 +704,21 @@ The \href{https://cran.r-project.org/package=sensitivity}{sensitivity} R package
 \hline
 mu.ycol1 & mu.ycol2 & mu.star.ycol1 & mu.star.ycol2 & sigma.ycol1 & sigma.ycol2\\
 \hline
-0.1258523 & -0.0366606 & 0.1258523 & 0.0386035 & 0.0118168 & 0.0545936\\
+0.0855901 & -0.0708773 & 0.0855901 & 0.0708773 & 0.0520541 & 0.0727943\\
 \hline
--0.0167993 & 0.0721534 & 0.0167993 & 0.0721534 & 0.0208969 & 0.0364881\\
-\hline
--0.0004497 & -0.0024241 & 0.0004497 & 0.0024241 & 0.0006359 & 0.0034282\\
+-0.0387020 & 0.0323117 & 0.0387020 & 0.0954209 & 0.0005655 & 0.1349455\\
 \hline
 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000\\
 \hline
-0.0161598 & 0.0192713 & 0.0161598 & 0.0276047 & 0.0073267 & 0.0390389\\
+0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000\\
 \hline
-0.0375014 & -0.0405481 & 0.0375014 & 0.0454711 & 0.0278842 & 0.0643059\\
+0.0147451 & 0.0344242 & 0.0147451 & 0.0344242 & 0.0009654 & 0.0032269\\
 \hline
--0.4140280 & -0.4979411 & 0.4140280 & 0.4979411 & 0.0275821 & 0.2715614\\
+0.0315694 & 0.0615515 & 0.0315694 & 0.1662387 & 0.0073306 & 0.2350970\\
 \hline
-0.0741573 & 0.1943334 & 0.0741573 & 0.6462617 & 0.0585579 & 0.9139521\\
+-0.3548075 & -0.0352672 & 0.3548075 & 0.4582746 & 0.1048928 & 0.6480982\\
+\hline
+0.0500534 & -0.2787578 & 0.0500534 & 0.2787578 & 0.0634839 & 0.0682473\\
 \hline
 \end{tabular}
 
@@ -896,11 +890,9 @@ Make use of calibration results, by merging simulation outputs with front object
 \hline
 T\_m & C\_m & TT\_F & F\_T & t\_API & f\_runoff & sw\_m & f\_inf & KGE\_qtot & KGE\_qbase & KGE\_score\\
 \hline
-1.679990 & 4.223536 & -12.73111 & 11.17360 & 4.737293 & 0.5861675 & 160.9877 & 0.0353507 & 0.7273544 & 0.7130841 & 0.7187922\\
+1.298175 & 4.599157 & -14.62125 & 22.71037 & 4.237728 & 0.5765881 & 255.4126 & 0.0413691 & 0.6219086 & 0.7696231 & 0.7105373\\
 \hline
-1.085446 & 6.196717 & -13.59741 & 28.86741 & 3.402038 & 0.5901827 & 319.5927 & 0.0413703 & 0.4950154 & 0.8204889 & 0.6902995\\
-\hline
-2.389945 & 5.356833 & -14.60400 & 23.79462 & 4.543765 & 0.5137648 & 265.5619 & 0.0322331 & 0.6310661 & 0.7133485 & 0.6804355\\
+1.947482 & 4.963362 & -14.47543 & 25.27647 & 4.011092 & 0.5623441 & 208.6769 & 0.0437775 & 0.6947391 & 0.6829103 & 0.6876418\\
 \hline
 \end{tabular}
 
