@@ -158,7 +158,7 @@ This book provides users with some common workflows for performing groundwater r
 
 \textbf{HydroBudget} (HB) is a spatially distributed groundwater recharge (GWR) model that computes a superficial water budget on grid cells of regional-scale watersheds with outputs aggregated into monthly time steps and with limited computational time. The model is open-source and was coded in R. This \texttt{rechaRge} R package is the result of the effort to make this code reusable and extensible.
 
-This book is organized into three parts. In the \emph{Introduction}, we provide practical information about the \texttt{rechaRge} R package. The \emph{Simulation} part focuses on the \textbf{HydroBudget} model that comes with the R package, and how to use the \texttt{rechaRge}functions to run simulations, then save and visualize the results. The \emph{Calibration and Sensitivity} part explores the usage of the \texttt{sensitivity} and of the \texttt{caRamel} R packages to find and evaluate the ``best'' sets of model parameters. Finally, the \emph{Extensibility} section highlights how the generic functions of the \texttt{rechaRge} R package can be applied to a different groundwater recharge model.
+This book is organized into different parts. In the \emph{Introduction}, we provide practical information about the \texttt{rechaRge} R package. The \emph{Simulation} part focuses on the \textbf{HydroBudget} model that comes with the R package, and how to use the \texttt{rechaRge}functions to run simulations, then save and visualize the results. The \emph{Calibration and Sensitivity} part explores the usage of the \texttt{sensitivity} and of the \texttt{caRamel} R packages to find and evaluate the ``best'' sets of model parameters. Finally, the \emph{Extensibility} section highlights how the generic functions of the \texttt{rechaRge} R package can be applied to a different groundwater recharge model.
 
 \hypertarget{intro}{%
 \chapter{Introduction}\label{intro}}
@@ -509,8 +509,10 @@ Following the previous example, we will need to load observations datasets:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{input\_rcn\_gauging }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"rcn\_gauging.csv.gz"}\NormalTok{) }\CommentTok{\# relation between gaugins station and RCN cell IDs}
-\NormalTok{input\_observed\_flow }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"observed\_flow.csv.gz"}\NormalTok{) }\CommentTok{\# flow rates in mm/d}
+ \CommentTok{\# relation between gaugins station and RCN cell IDs}
+\NormalTok{input\_rcn\_gauging }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"rcn\_gauging.csv.gz"}\NormalTok{)}
+ \CommentTok{\# flow rates in mm/d}
+\NormalTok{input\_observed\_flow }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"observed\_flow.csv.gz"}\NormalTok{)}
 \NormalTok{input\_alpha\_lyne\_hollick }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(base\_url, }\StringTok{"alpha\_lyne\_hollick.csv.gz"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -658,7 +660,8 @@ The \href{https://cran.r-project.org/package=sensitivity}{sensitivity} R package
 \FunctionTok{library}\NormalTok{(future.apply)}
 
 \NormalTok{hydrobudget\_sens }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(X) \{}
-\NormalTok{  kge\_hb }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{future\_apply}\NormalTok{(X, }\AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }\AttributeTok{FUN =}\NormalTok{ hydrobudget\_eval, }\AttributeTok{future.seed =} \ConstantTok{TRUE}\NormalTok{)))}
+\NormalTok{  kge\_hb }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{t}\NormalTok{(}
+    \FunctionTok{future\_apply}\NormalTok{(X, }\AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }\AttributeTok{FUN =}\NormalTok{ hydrobudget\_eval, }\AttributeTok{future.seed =} \ConstantTok{TRUE}\NormalTok{)))}
   \FunctionTok{return}\NormalTok{(kge\_hb)}
 \NormalTok{\}}
 
@@ -704,21 +707,21 @@ The \href{https://cran.r-project.org/package=sensitivity}{sensitivity} R package
 \hline
 mu.ycol1 & mu.ycol2 & mu.star.ycol1 & mu.star.ycol2 & sigma.ycol1 & sigma.ycol2\\
 \hline
-0.0855901 & -0.0708773 & 0.0855901 & 0.0708773 & 0.0520541 & 0.0727943\\
+0.1057706 & -0.0800860 & 0.1057706 & 0.0800860 & 0.0074096 & 0.0059664\\
 \hline
--0.0387020 & 0.0323117 & 0.0387020 & 0.0954209 & 0.0005655 & 0.1349455\\
-\hline
-0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000\\
+-0.0169729 & 0.0764310 & 0.0219527 & 0.0764310 & 0.0310458 & 0.0441381\\
 \hline
 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000\\
 \hline
-0.0147451 & 0.0344242 & 0.0147451 & 0.0344242 & 0.0009654 & 0.0032269\\
+0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000 & 0.0000000\\
 \hline
-0.0315694 & 0.0615515 & 0.0315694 & 0.1662387 & 0.0073306 & 0.2350970\\
+0.0212918 & -0.0140694 & 0.0212918 & 0.0140694 & 0.0058654 & 0.0192185\\
 \hline
--0.3548075 & -0.0352672 & 0.3548075 & 0.4582746 & 0.1048928 & 0.6480982\\
+0.0456199 & -0.0680606 & 0.0456199 & 0.0680606 & 0.0143449 & 0.0015621\\
 \hline
-0.0500534 & -0.2787578 & 0.0500534 & 0.2787578 & 0.0634839 & 0.0682473\\
+-0.2661576 & -0.3363263 & 0.2661576 & 0.3363263 & 0.0103630 & 0.3262131\\
+\hline
+0.1085154 & 0.7497127 & 0.1085154 & 0.7497127 & 0.0315015 & 0.2247081\\
 \hline
 \end{tabular}
 
@@ -863,10 +866,10 @@ Then perform calibration with sensitivity:
   \AttributeTok{prec =} \FunctionTok{matrix}\NormalTok{(}\FloatTok{0.01}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{1}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ nobj),}
   \AttributeTok{sensitivity =} \ConstantTok{FALSE}\NormalTok{, }\CommentTok{\# you can include sensitivity analysis}
   \AttributeTok{archsize =} \DecValTok{100}\NormalTok{,}\CommentTok{\# adjust to relevant value}
-  \AttributeTok{popsize =} \DecValTok{10}\NormalTok{,  }\CommentTok{\# adjust to relevant value}
-  \AttributeTok{maxrun =} \DecValTok{10}\NormalTok{,   }\CommentTok{\# adjust to relevant value}
-  \AttributeTok{carallel =} \DecValTok{1}\NormalTok{, }\CommentTok{\# do parallel ...}
-  \AttributeTok{numcores =} \DecValTok{2}  \CommentTok{\# ... on 2 cores}
+  \AttributeTok{popsize =} \DecValTok{20}\NormalTok{,  }\CommentTok{\# adjust to relevant value}
+  \AttributeTok{maxrun =} \DecValTok{20}\NormalTok{,   }\CommentTok{\# adjust to relevant value}
+  \AttributeTok{carallel =} \DecValTok{1}\NormalTok{,  }\CommentTok{\# do parallel ...}
+  \AttributeTok{numcores =} \DecValTok{2}   \CommentTok{\# ... on 2 cores}
 \NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -878,8 +881,10 @@ Make use of calibration results, by merging simulation outputs with front object
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{output\_front }\OtherTok{\textless{}{-}} \FunctionTok{data.table}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(calibration\_results}\SpecialCharTok{$}\NormalTok{parameters, calibration\_results}\SpecialCharTok{$}\NormalTok{objectives))}
-\FunctionTok{colnames}\NormalTok{(output\_front) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"T\_m"}\NormalTok{, }\StringTok{"C\_m"}\NormalTok{, }\StringTok{"TT\_F"}\NormalTok{, }\StringTok{"F\_T"}\NormalTok{, }\StringTok{"t\_API"}\NormalTok{, }\StringTok{"f\_runoff"}\NormalTok{, }\StringTok{"sw\_m"}\NormalTok{, }\StringTok{"f\_inf"}\NormalTok{, }\StringTok{"KGE\_qtot"}\NormalTok{, }\StringTok{"KGE\_qbase"}\NormalTok{)}
+\NormalTok{output\_front }\OtherTok{\textless{}{-}} \FunctionTok{data.table}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}
+\NormalTok{  calibration\_results}\SpecialCharTok{$}\NormalTok{parameters, calibration\_results}\SpecialCharTok{$}\NormalTok{objectives))}
+\FunctionTok{colnames}\NormalTok{(output\_front) }\OtherTok{\textless{}{-}} 
+  \FunctionTok{c}\NormalTok{(}\StringTok{"T\_m"}\NormalTok{, }\StringTok{"C\_m"}\NormalTok{, }\StringTok{"TT\_F"}\NormalTok{, }\StringTok{"F\_T"}\NormalTok{, }\StringTok{"t\_API"}\NormalTok{, }\StringTok{"f\_runoff"}\NormalTok{, }\StringTok{"sw\_m"}\NormalTok{, }\StringTok{"f\_inf"}\NormalTok{, }\StringTok{"KGE\_qtot"}\NormalTok{, }\StringTok{"KGE\_qbase"}\NormalTok{)}
 \NormalTok{y }\OtherTok{\textless{}{-}} \FloatTok{0.6} \CommentTok{\# choose your KGE weight criteria}
 \NormalTok{output\_front[, }\StringTok{\textasciigrave{}}\AttributeTok{:=}\StringTok{\textasciigrave{}}\NormalTok{(}\AttributeTok{KGE\_score =}\NormalTok{ (KGE\_qtot }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ y) }\SpecialCharTok{+}\NormalTok{ KGE\_qbase }\SpecialCharTok{*}\NormalTok{ y))]}
 \NormalTok{output\_front }\OtherTok{\textless{}{-}}\NormalTok{ output\_front[}\FunctionTok{order}\NormalTok{(KGE\_score, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{)]}
@@ -890,9 +895,11 @@ Make use of calibration results, by merging simulation outputs with front object
 \hline
 T\_m & C\_m & TT\_F & F\_T & t\_API & f\_runoff & sw\_m & f\_inf & KGE\_qtot & KGE\_qbase & KGE\_score\\
 \hline
-1.298175 & 4.599157 & -14.62125 & 22.71037 & 4.237728 & 0.5765881 & 255.4126 & 0.0413691 & 0.6219086 & 0.7696231 & 0.7105373\\
+1.233346 & 5.623252 & -15.49015 & 29.301143 & 3.811963 & 0.5961505 & 269.4135 & 0.0321405 & 0.5593578 & 0.8065478 & 0.7076718\\
 \hline
-1.947482 & 4.963362 & -14.47543 & 25.27647 & 4.011092 & 0.5623441 & 208.6769 & 0.0437775 & 0.6947391 & 0.6829103 & 0.6876418\\
+1.492015 & 4.958859 & -13.23603 & 5.717497 & 4.078846 & 0.5521782 & 253.7823 & 0.0358564 & 0.6166327 & 0.7570648 & 0.7008920\\
+\hline
+1.352516 & 4.913283 & -17.39437 & 9.707676 & 3.164533 & 0.5974775 & 182.5930 & 0.0162182 & 0.6447396 & 0.7128739 & 0.6856202\\
 \hline
 \end{tabular}
 
@@ -1010,7 +1017,8 @@ The following function will, for a given metric (e.g.~\texttt{gwr}, \texttt{runo
 \NormalTok{  ym\_cols }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"year"}\NormalTok{, }\StringTok{"month"}\NormalTok{)}
   \FunctionTok{set}\NormalTok{(metrics\_monthly, }\AttributeTok{j =} \StringTok{"mean"}\NormalTok{, }\AttributeTok{value =} \FunctionTok{apply}\NormalTok{(metrics\_monthly[, }\SpecialCharTok{!}\NormalTok{..ym\_cols], }\DecValTok{1}\NormalTok{, mean))}
   \FunctionTok{set}\NormalTok{(metrics\_monthly, }\AttributeTok{j =} \StringTok{"sd"}\NormalTok{, }\AttributeTok{value =} \FunctionTok{apply}\NormalTok{(metrics\_monthly[, }\SpecialCharTok{!}\NormalTok{..ym\_cols], }\DecValTok{1}\NormalTok{, sd))}
-  \FunctionTok{set}\NormalTok{(metrics\_monthly, }\AttributeTok{j =} \StringTok{"date"}\NormalTok{, }\AttributeTok{value =} \FunctionTok{as.POSIXct}\NormalTok{(}\FunctionTok{paste}\NormalTok{(metrics\_monthly}\SpecialCharTok{$}\NormalTok{year, metrics\_monthly}\SpecialCharTok{$}\NormalTok{month, }\StringTok{"1"}\NormalTok{, }\AttributeTok{sep=}\StringTok{"{-}"}\NormalTok{)))}
+  \FunctionTok{set}\NormalTok{(metrics\_monthly, }\AttributeTok{j =} \StringTok{"date"}\NormalTok{,}
+      \AttributeTok{value =} \FunctionTok{as.POSIXct}\NormalTok{(}\FunctionTok{paste}\NormalTok{(metrics\_monthly}\SpecialCharTok{$}\NormalTok{year, metrics\_monthly}\SpecialCharTok{$}\NormalTok{month, }\StringTok{"1"}\NormalTok{, }\AttributeTok{sep=}\StringTok{"{-}"}\NormalTok{)))}
   \FunctionTok{set}\NormalTok{(metrics\_monthly, }\AttributeTok{j =} \StringTok{"min"}\NormalTok{, }\AttributeTok{value =}\NormalTok{ metrics\_monthly}\SpecialCharTok{$}\NormalTok{mean }\SpecialCharTok{{-}}\NormalTok{ metrics\_monthly}\SpecialCharTok{$}\NormalTok{sd)}
   \FunctionTok{set}\NormalTok{(metrics\_monthly, }\AttributeTok{j =} \StringTok{"max"}\NormalTok{, }\AttributeTok{value =}\NormalTok{ metrics\_monthly}\SpecialCharTok{$}\NormalTok{mean }\SpecialCharTok{+}\NormalTok{ metrics\_monthly}\SpecialCharTok{$}\NormalTok{sd)}
   \FunctionTok{colnames}\NormalTok{(metrics\_monthly)[[}\DecValTok{3}\NormalTok{]] }\OtherTok{\textless{}{-}} \StringTok{"best"}

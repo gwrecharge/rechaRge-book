@@ -7,8 +7,10 @@ We will make use of `rechaRge` API to perform calibration and sensitivity analys
 Following the previous example, we will need to load observations datasets:
 
 ```{r, calib-input}
-input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
-input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
+ # relation between gaugins station and RCN cell IDs
+input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz")
+ # flow rates in mm/d
+input_observed_flow <- paste0(base_url, "observed_flow.csv.gz")
 input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
 ```
 
@@ -136,7 +138,8 @@ library(sensitivity)
 library(future.apply)
 
 hydrobudget_sens <- function(X) {
-  kge_hb <- as.matrix(t(future_apply(X, MARGIN = 1, FUN = hydrobudget_eval, future.seed = TRUE)))
+  kge_hb <- as.matrix(t(
+    future_apply(X, MARGIN = 1, FUN = hydrobudget_eval, future.seed = TRUE)))
   return(kge_hb)
 }
 
@@ -305,10 +308,10 @@ calibration_results <- caRamel(
   prec = matrix(0.01, nrow = 1, ncol = nobj),
   sensitivity = FALSE, # you can include sensitivity analysis
   archsize = 100,# adjust to relevant value
-  popsize = 10,  # adjust to relevant value
-  maxrun = 10,   # adjust to relevant value
-  carallel = 1, # do parallel ...
-  numcores = 2  # ... on 2 cores
+  popsize = 20,  # adjust to relevant value
+  maxrun = 20,   # adjust to relevant value
+  carallel = 1,  # do parallel ...
+  numcores = 2   # ... on 2 cores
 )
 ```
 
@@ -317,8 +320,10 @@ calibration_results <- caRamel(
 Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters, ordered by "best fit" score:
 
 ```{r, calib-crml-front}
-output_front <- data.table(cbind(calibration_results$parameters, calibration_results$objectives))
-colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
+output_front <- data.table(cbind(
+  calibration_results$parameters, calibration_results$objectives))
+colnames(output_front) <- 
+  c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
 y <- 0.6 # choose your KGE weight criteria
 output_front[, `:=`(KGE_score = (KGE_qtot * (1 - y) + KGE_qbase * y))]
 output_front <- output_front[order(KGE_score, decreasing = TRUE)]
@@ -425,7 +430,8 @@ plot_metric <- function(water_budgets, metric, title = NULL) {
   ym_cols <- c("year", "month")
   set(metrics_monthly, j = "mean", value = apply(metrics_monthly[, !..ym_cols], 1, mean))
   set(metrics_monthly, j = "sd", value = apply(metrics_monthly[, !..ym_cols], 1, sd))
-  set(metrics_monthly, j = "date", value = as.POSIXct(paste(metrics_monthly$year, metrics_monthly$month, "1", sep="-")))
+  set(metrics_monthly, j = "date",
+      value = as.POSIXct(paste(metrics_monthly$year, metrics_monthly$month, "1", sep="-")))
   set(metrics_monthly, j = "min", value = metrics_monthly$mean - metrics_monthly$sd)
   set(metrics_monthly, j = "max", value = metrics_monthly$mean + metrics_monthly$sd)
   colnames(metrics_monthly)[[3]] <- "best"
