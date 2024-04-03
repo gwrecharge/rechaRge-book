@@ -160,7 +160,7 @@ input_rcn <- fread(paste0(base_url, "rcn.csv.gz")) # RCN values per RCN cell ID
 input_climate <- fread(paste0(base_url, "climate.csv.gz")) # precipitation total in mm/d per climate cell ID
 input_rcn_climate <- fread(paste0(base_url, "rcn_climate.csv.gz")) # relation between climate and RCN cell IDs
 # Simulation period
-simul_period <- c(2016, 2017)
+simul_period <- c(2017, 2017)
 
 # run simulations
 water_budgets <- lapply(param_ids, FUN = function(i) {
@@ -190,7 +190,7 @@ water_budgets <- lapply(param_ids, FUN = function(i) {
   # Simulation with the HydroBudget model
   rechaRge::with_verbose(TRUE)
   rechaRge::with_progress(TRUE)
-  water_budget <- rechaRge::compute_recharge(
+  rechaRge::compute_recharge(
     HB,
     rcn = input_rcn,
     climate = input_climate,
@@ -227,6 +227,8 @@ plot_metric <- function(water_budgets, metric, title = NULL) {
   colnames(metrics_monthly)[[3]] <- "best"
 
   # plot uncertainty
+  library(ggplot2)
+  library(scales)
   ggplot(data = metrics_monthly, aes(x = date)) +
     geom_ribbon(aes(ymin = min, ymax = max), fill = "gray", alpha = 0.4) +
     geom_line(aes(y = best, color = "best")) +

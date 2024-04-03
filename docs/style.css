@@ -7,7 +7,6 @@ p code {
 }
 pre {
   white-space: pre !important;
-  overflow-y: scroll !important;
   max-height: 50vh !important;
   word-break: normal;
   word-wrap: normal;

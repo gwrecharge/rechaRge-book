@@ -64,7 +64,7 @@ simul_period <- c(2010, 2017)
 
 Once the **HydroBudget** object is ready, compute the water budget using the model implementation:
 
-```{r, cache=TRUE, message=FALSE}
+```{r, message=FALSE}
 water_budget <- rechaRge::compute_recharge(
   HB,
   rcn = input_rcn,

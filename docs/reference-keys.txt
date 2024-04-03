@@ -18,6 +18,7 @@ using-caramel
 define-objective-function
 run-calibration-analysis
 handle-calibration-results
+evaluate-uncertainty
 extensibility
 generic-functions
 other-languages

@@ -14,7 +14,7 @@ description: "The book presents the rechaRge package, and how it is used with th
 
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(comment="", warning=FALSE, message=FALSE, cache=TRUE,
+knitr::opts_chunk$set(comment="", warning=FALSE, message=FALSE,
                       fig.topcaption=TRUE, fig.path = "fig/")
 library(kableExtra)
 ```
