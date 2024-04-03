@@ -231,8 +231,8 @@ plot_metric <- function(water_budgets, metric, title = NULL) {
   library(scales)
   ggplot(data = metrics_monthly, aes(x = date)) +
     geom_ribbon(aes(ymin = min, ymax = max), fill = "gray", alpha = 0.4) +
-    geom_line(aes(y = best, color = "best")) +
     geom_line(aes(y = mean, color = "mean")) +
+    geom_line(aes(y = best, color = "best")) +
     labs(title = title, color = metric, x = "date", y = metric) +
     scale_color_manual(values = c(best = "red", mean = "cyan")) +
     scale_x_datetime(date_labels = "%Y-%m", breaks = date_breaks("months")) +

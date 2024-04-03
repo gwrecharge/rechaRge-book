@@ -23,10 +23,12 @@ library(kableExtra)
 
 This book provides users with some common workflows for performing groundwater recharge modeling. This book will teach you how to use the [rechaRge](https://github.com/gwrecharge/rechaRge) R package [@R-rechaRge]. This material serves as an online companion for the manuscript “Simulation of long-term spatiotemporal variations in regional-scale groundwater recharge: contributions of a water budget approach in cold and humid climates” [@hess-25-6567-2021].
 
-HydroBudget (HB) is a spatially distributed groundwater recharge (GWR) model that computes a superficial water budget on grid cells of regional-scale watersheds with outputs aggregated into monthly time steps and with limited computational time. The model is open-source and was coded in R. This `rechaRge` R package is the result of the effort to make this code reusable and extensible.
+**HydroBudget** (HB) is a spatially distributed groundwater recharge (GWR) model that computes a superficial water budget on grid cells of regional-scale watersheds with outputs aggregated into monthly time steps and with limited computational time. The model is open-source and was coded in R. This `rechaRge` R package is the result of the effort to make this code reusable and extensible.
 
-This book is organized into xxx parts. In the Preamble, we introduce the book, provides a tutorial for ...
+This book is organized into three parts. In the _Introduction_, we provide practical information about the `rechaRge` R package.
 
-The xxx part, ...
+The _Simulation_ part focuses on the **HydroBudget** model that comes with the R package, and how make use the `rechaRge`functions to run simulations, then save and visualize the results. 
 
-Finally, the Appendix highlights our contributors.
+The _Calibration and Sensitivity_ part explores the usage of the `sensitivity` and of the `caRamel` R packages to find and evaluate the "best" sets of model parameters.
+
+Finally, the _Extensibility_ highlights how the generic functions of the `rechaRge` R package can applied to a different groundwater recharge model.

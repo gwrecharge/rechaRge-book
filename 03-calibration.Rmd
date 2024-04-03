@@ -6,7 +6,7 @@ We will make use of `rechaRge` API to perform calibration and sensitivity analys
 
 Following the previous example, we will need to load observations datasets:
 
-```{r}
+```{r, calib-input}
 input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between gaugins station and RCN cell IDs
 input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
 input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
@@ -14,7 +14,7 @@ input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
 
 And we also need in this case to update the settings of the **HydroBudget** model object, so that column names match with the expected ones:
 
-```{r}
+```{r, calib-model-columns}
 HB$rcn_gauging_columns <- list(
   rcn_id = "cell_ID",
   station_id = "gauging_stat"
@@ -24,7 +24,7 @@ HB$alpha_lyne_hollick_columns$station_id <- "station"
 
 Then we can process the river flow observations and assess simulation quality:
 
-```{r, message=FALSE}
+```{r, , calib-quality, message=FALSE}
 quality <- rechaRge::evaluate_simulation_quality(
   HB,
   water_budget = water_budget,
@@ -37,7 +37,7 @@ quality <- rechaRge::evaluate_simulation_quality(
 
 The `rechaRge` package proposes an model-free implementation of the [Kling-Gupta Efficiency](https://en.wikipedia.org/wiki/Kling%E2%80%93Gupta_efficiency) algorithm, that can be used for quality evaluation. In the case of our example the quality measurements of interest are:
 
-```{r}
+```{r, calib-kges}
 list(
   KGE_qtot_cal_mean = mean(quality$simulation_metadata$KGE_qtot_cal),
   KGE_qbase_cal_mean = mean(quality$simulation_metadata$KGE_qbase_cal))
@@ -50,7 +50,7 @@ The [sensitivity](https://cran.r-project.org/package=sensitivity) R package can 
 
 ### Define model function
 
-```{r}
+```{r, calib-sens-prepare}
 library(rechaRge)
 library(data.table)
 
@@ -130,7 +130,7 @@ hydrobudget_eval <- function(i) {
 
 ### Run sensitivity analysis
 
-```{r, message=FALSE, results='hide', fig.show='hide'}
+```{r, calib-sens-analysis, message=FALSE, results='hide', fig.show='hide'}
 library(sensitivity)
 # Use future package to parallel
 library(future.apply)
@@ -160,7 +160,7 @@ sensitivity_results <- morris(
 
 ### Handle sensitivity results
 
-```{r}
+```{r, calib-sens-results}
 # Variable of interest
 mu <- apply(sensitivity_results$ee, 3, function(M){
   apply(M, 2, mean)
@@ -178,22 +178,17 @@ sensitivity_eval <- data.table(mu = mu, mu.star = mu.star, sigma = sigma)
 knitr::kable(sensitivity_eval)
 ```
 
-
 ```{r}
 # Plot
 plot(sensitivity_results, y_col = 2)
 title(main = "y_col = 2")
 ```
 
-
 ```{r}
 plot.new()
 plot(sensitivity_results, y_col = 1)
 title(main = "y_col = 1")
 ```
-
-
-
 
 ## Using caRamel
 
@@ -203,9 +198,7 @@ The [caRamel](https://cran.r-project.org/package=caRamel) R package can perform 
 
 We will start by defining the objective function to optimize: this function will run a simulation and quality evaluation and its returned values will be used by `caRamel` to measure the quality of the injected parameters.
 
-```{r}
-library(data.table)
-
+```{r, calib-crml-prepare}
 make_hydrobudget_eval <- function() {
   # Preload input data
   # Quiet download
@@ -289,7 +282,7 @@ make_hydrobudget_eval <- function() {
 
 Then perform calibration with sensitivity:
 
-```{r, message=FALSE, results='hide', fig.show='hide'}
+```{r, calib-crml-analysis, message=FALSE, results='hide', fig.show='hide'}
 library(caRamel)
 
 # Number of objectives
@@ -323,8 +316,8 @@ calibration_results <- caRamel(
 
 Make use of calibration results, by merging simulation outputs with front objectives, to get more readable parameters, ordered by "best fit" score:
 
-```{r}
-output_front <- data.table::data.table(cbind(calibration_results$parameters, calibration_results$objectives))
+```{r, calib-crml-front}
+output_front <- data.table(cbind(calibration_results$parameters, calibration_results$objectives))
 colnames(output_front) <- c("T_m", "C_m", "TT_F", "F_T", "t_API", "f_runoff", "sw_m", "f_inf", "KGE_qtot", "KGE_qbase")
 y <- 0.6 # choose your KGE weight criteria
 output_front[, `:=`(KGE_score = (KGE_qtot * (1 - y) + KGE_qbase * y))]
@@ -344,7 +337,7 @@ plot_caramel(calibration_results, objnames = c("KGE_qtot", "KGE_qbase"))
 
 Scatter plot the calibration's simulations, with the resulting [Pareto front](https://en.wikipedia.org/wiki/Pareto_front):
 
-```{r}
+```{r, calib-crml-scatter-plot}
 # Plot all using ggplot
 library(ggplot2)
 front <- data.table(calibration_results$objectives)
@@ -365,7 +358,7 @@ ggplot(combined_data, aes(x = KGE_qtot, y = KGE_qbase, color = group)) +
 
 For each set of parameters proposed by `caRamel`, run a simulation and then evaluate the uncertainty of the set of parameters identified as being the "best fit".
 
-```{r}
+```{r, calib-uncert-prepare}
 # for each proposed set of parameters, run the water budget simulation
 param_ids <- as.numeric(rownames(output_front))
 
@@ -410,7 +403,7 @@ The following function will, for a given metric (e.g. `gwr`, `runoff` etc.):
 * make one row per year-month, one column for the value of the "best fit" simulation, one for the mean of all the simulated values, and one for the standard deviation between all the simulated values.
 * plot the corresponding time series, showing how the "best fit" compares with the mean and the standard deviation range.
 
-```{r}
+```{r, calib-uncert-metric}
 # make one row per year-month and one column per simulated measure
 plot_metric <- function(water_budgets, metric, title = NULL) {
   # spatialized: add metric values starting from best fit
@@ -442,8 +435,8 @@ plot_metric <- function(water_budgets, metric, title = NULL) {
   library(scales)
   ggplot(data = metrics_monthly, aes(x = date)) +
     geom_ribbon(aes(ymin = min, ymax = max), fill = "gray", alpha = 0.4) +
-    geom_line(aes(y = best, color = "best")) +
     geom_line(aes(y = mean, color = "mean")) +
+    geom_line(aes(y = best, color = "best")) +
     labs(title = title, color = metric, x = "date", y = metric) +
     scale_color_manual(values = c(best = "red", mean = "cyan")) +
     scale_x_datetime(date_labels = "%Y-%m", breaks = date_breaks("months")) +
@@ -453,19 +446,23 @@ plot_metric <- function(water_budgets, metric, title = NULL) {
 
 We can now visualize the uncertainty for different metrics:
 
-```{r}
-plot_metric(water_budgets, "gwr", title = paste0("Simulations (", length(param_ids),"): groundwater recharge"))
+```{r, calib-uncert-gwr}
+plot_metric(water_budgets, "gwr", 
+            title = paste0("Simulations (", length(param_ids),"): groundwater recharge"))
 ```
 
-```{r}
-plot_metric(water_budgets, "runoff", title = paste0("Simulations (", length(param_ids),"): runoff"))
+```{r, calib-uncert-runoff}
+plot_metric(water_budgets, "runoff", 
+            title = paste0("Simulations (", length(param_ids),"): runoff"))
 ```
 
-```{r}
-plot_metric(water_budgets, "vi", title = paste0("Simulations (", length(param_ids),"): vertical inflow"))
+```{r, calib-uncert-vi}
+plot_metric(water_budgets, "vi", 
+            title = paste0("Simulations (", length(param_ids),"): vertical inflow"))
 ```
 
-```{r}
-plot_metric(water_budgets, "aet", title = paste0("Simulations (", length(param_ids),"): actual evapotranspiration"))
+```{r, calib-uncert-aet}
+plot_metric(water_budgets, "aet", 
+            title = paste0("Simulations (", length(param_ids),"): actual evapotranspiration"))
 ```
 

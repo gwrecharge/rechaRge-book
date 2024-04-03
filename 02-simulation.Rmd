@@ -10,13 +10,13 @@
 
 Start with loading the `rechaRge` library.
 
-```{r}
+```{r, sim-lib}
 library(rechaRge)
 ```
 
 Then load the input data for the simulation. In that case, the example datasets are available for download. The data input handler is based on `data.table::fread` function, then you can provide an URL like in the example or a local file path.
 
-```{r}
+```{r, sim-input}
 base_url <- "https://github.com/gwrecharge/rechaRge-book/raw/main/examples/input/"
 input_rcn <- paste0(base_url, "rcn.csv.gz") # RCN values per RCN cell ID
 input_climate <- paste0(base_url, "climate.csv.gz") # precipitation total in mm/d per climate cell ID
@@ -25,7 +25,7 @@ input_rcn_climate <- paste0(base_url, "rcn_climate.csv.gz") # relation between c
 
 Set the **HydroBudget** model with the parameters values (if you do not know which parameters to set, see the Calibration section):
 
-```{r}
+```{r, sim-model}
 HB <- rechaRge::new_hydrobudget(
   T_m = 2.1, # melting temperature (°C)
   C_m = 6.2, # melting coefficient (mm/°C/d)
@@ -40,7 +40,7 @@ HB <- rechaRge::new_hydrobudget(
 
 As the **HydroBudget** model expects some data structure (expected data, with predefined column names), set the column names mappings matching the input datasets:
 
-```{r}
+```{r, sim-model-columns}
 HB$rcn_columns <- list(
   rcn_id = "cell_ID",
   RCNII = "RCNII",
@@ -56,7 +56,7 @@ HB$rcn_climate_columns <- list(
 
 Then define the simulation period (if not, the period will be discovered from the input data):
 
-```{r}
+```{r, sim-period}
 simul_period <- c(2010, 2017)
 ```
 
@@ -64,7 +64,7 @@ simul_period <- c(2010, 2017)
 
 Once the **HydroBudget** object is ready, compute the water budget using the model implementation:
 
-```{r, message=FALSE}
+```{r, sim-compute, message=FALSE}
 water_budget <- rechaRge::compute_recharge(
   HB,
   rcn = input_rcn,
@@ -98,7 +98,7 @@ The simulation results can be reworked, summarized and visualized.
 
 Start with defining the output folder:
 
-```{r}
+```{r, sim-dir}
 sim_dir <- file.path(tempdir(), paste0("simulation_HydroBudget_", format(Sys.time(), "%Y%m%dT%H_%M")))
 ```
 
@@ -106,14 +106,14 @@ Then write the resulting water budget in different formats in this output folder
 
 * CSV
 
-```{r}
+```{r, sim-write-csv}
 # CSV
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir)
 ```
 
 * NetCDF
 
-```{r}
+```{r, sim-write-nc}
 # NetCDF
 rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format = "nc", input_rcn = input_rcn, names = list(
   "lon" = list(
@@ -129,7 +129,7 @@ rechaRge::write_recharge_results(HB, water_budget, output_dir = sim_dir, format 
 
 * Rasters
 
-```{r}
+```{r, sim-write-rasters}
 # Rasters
 rechaRge::write_recharge_rasters(
   HB,
@@ -142,7 +142,7 @@ rechaRge::write_recharge_rasters(
 
 The output folder content should look like this:
 
-```{r}
+```{r, sim-ls}
 # List simulation output files
 list.files(sim_dir)
 ```
@@ -151,7 +151,7 @@ list.files(sim_dir)
 
 Visualize the saved NetCDF file:
 
-```{r, message=FALSE}
+```{r, sim-viz-nc, message=FALSE}
 library(ncdf4)
 library(lattice)
 library(viridisLite)
@@ -183,7 +183,7 @@ levelplot(gwr1 ~ lon * lat, data=grid, pretty=T, col.regions=inferno(100),
 
 Visualize the saved raster files:
 
-```{r, message=FALSE}
+```{r, sim-viz-rasters, message=FALSE}
 library(tidyterra)
 library(terra)
 library(ggplot2)
@@ -222,7 +222,7 @@ gwrplot <- ggplot() +
 cowplot::plot_grid(runoffplot, aetplot, gwrplot)
 ```
 
-```{r, include=FALSE}
+```{r, sim-clean, include=FALSE}
 # Clean up
 unlink(sim_dir, recursive = TRUE)
 ```

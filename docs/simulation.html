@@ -469,7 +469,7 @@ div.csl-indent {
 <span id="cb15-22"><a href="simulation.html#cb15-22" tabindex="-1"></a>ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(lonatt<span class="sc">$</span>long_name, <span class="st">&quot; (&quot;</span>, lonatt<span class="sc">$</span>units, <span class="st">&quot;)&quot;</span>)</span>
 <span id="cb15-23"><a href="simulation.html#cb15-23" tabindex="-1"></a><span class="fu">levelplot</span>(gwr1 <span class="sc">~</span> lon <span class="sc">*</span> lat, <span class="at">data=</span>grid, <span class="at">pretty=</span>T, <span class="at">col.regions=</span><span class="fu">inferno</span>(<span class="dv">100</span>),</span>
 <span id="cb15-24"><a href="simulation.html#cb15-24" tabindex="-1"></a>          <span class="at">main=</span>title, <span class="at">xlab=</span>xlab, <span class="at">ylab=</span>ylab)</span></code></pre></div>
-<p><img src="fig/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="fig/sim-viz-nc-1.png" width="672" /></p>
 <p>Visualize the saved raster files:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="simulation.html#cb16-1" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
 <span id="cb16-2"><a href="simulation.html#cb16-2" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
@@ -507,7 +507,7 @@ div.csl-indent {
 <span id="cb16-34"><a href="simulation.html#cb16-34" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle</span>
 <span id="cb16-35"><a href="simulation.html#cb16-35" tabindex="-1"></a>  )</span>
 <span id="cb16-36"><a href="simulation.html#cb16-36" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(runoffplot, aetplot, gwrplot)</span></code></pre></div>
-<p><img src="fig/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="fig/sim-viz-rasters-1.png" width="672" /></p>
 
 </div>
 </div>
