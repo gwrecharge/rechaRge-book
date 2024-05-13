@@ -70,7 +70,7 @@ input_rcn_gauging <- paste0(base_url, "rcn_gauging.csv.gz") # relation between g
 input_observed_flow <- paste0(base_url, "observed_flow.csv.gz") # flow rates in mm/d
 input_alpha_lyne_hollick <- paste0(base_url, "alpha_lyne_hollick.csv.gz")
 
-result <- rechaRge::compute_simulation_quality_assessment(
+result <- rechaRge::evaluate_simulation_quality(
   HB,
   water_budget = water_budget,
   rcn_gauging = input_rcn_gauging,

@@ -73,7 +73,7 @@ hydrobudget_eval_builder <- function(yearFrom = 1961, yearTo = 2017) {
     )
 
     # Evaluate simulation quality
-    result <- rechaRge::compute_simulation_quality_assessment(
+    result <- rechaRge::evaluate_simulation_quality(
       HB,
       water_budget = water_budget,
       rcn_gauging = input_rcn_gauging,
